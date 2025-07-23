@@ -1,23 +1,42 @@
-import { Link, NavLink, useNavigate } from 'react-router';
+import { Link, Navigate, NavLink } from 'react-router';
 import { useContext } from 'react';
 import EduLogo from '../../assets/Brands/eduLogo.png';
-import { AuthContext } from '../../contexts/AuthContext/AuthContext';
-import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import AuthContext from '../../contexts/AuthContext';
+
 const Navbar = () => {
-  const { user, logOut } = useContext(AuthContext);
-  console.log(user);
-
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    try {
-      await logOut();
-      toast.success('Logged out successfully!');
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-      toast.error('Logout failed!');
-    }
+  const { user, logout } = useContext(AuthContext);
+  const handleLogout = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will be logged out!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, log out!',
+    }).then(result => {
+      if (result.isConfirmed) {
+        logout()
+          .then(() => {
+            Swal.fire({
+              title: 'Logged Out!',
+              text: 'You have been successfully logged out.',
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            <Navigate to="/"></Navigate>;
+          })
+          .catch(error => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: error.message,
+            });
+          });
+      }
+    });
   };
 
   const navItems = (

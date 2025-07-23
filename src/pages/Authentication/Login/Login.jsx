@@ -1,110 +1,87 @@
-import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate, Link } from 'react-router';
+import { useContext } from 'react';
 import { FaSignInAlt } from 'react-icons/fa';
-import { Link, Navigate } from 'react-router';
-import { AuthContext } from '../../../contexts/AuthContext/AuthContext';
+import Swal from 'sweetalert2';
+import AuthContext from '../../../contexts/AuthContext';
 
 const Login = () => {
-  const { loginUser, googleLogin } = useContext(AuthContext);
+  const { loginUser, signInWithGoogle } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = data => {
-    console.log('Login Data:', data);
-    loginUser();
-    // Handle login logic here (Firebase Auth + backend)
+  const onSubmit = async data => {
+    try {
+      await loginUser(data.email, data.password);
+      Swal.fire('Success!', 'Logged in successfully!', 'success');
+      navigate('/');
+    } catch (error) {
+      Swal.fire('Error', error.message, 'error');
+    }
   };
 
-  const handleGoogleSignIn = () => {
-    googleLogin()
-      .then(result => {
-        console.log(result);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+  const handleGoogle = async () => {
+    try {
+      await signInWithGoogle();
+      Swal.fire('Success!', 'Signed in with Google', 'success');
+      navigate('/');
+    } catch (error) {
+      Swal.fire('Error', error.message, 'error');
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gray-100 p-4">
-      {/* Left: Login Form */}
+      {/* Left Side: Login Form */}
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <div>
-            <label className="block mb-1 font-medium">Email</label>
-            <input
-              type="email"
-              {...register('email', {
-                required: 'Email is required',
-                pattern: {
-                  value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
-                  message: 'Invalid email address',
-                },
-              })}
-              className="input input-bordered w-full"
-              placeholder="Your email"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
+        <h2 className="text-2xl font-bold mb-4">Login</h2>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <input
+            {...register('email', { required: true })}
+            className="input input-bordered w-full"
+            placeholder="Email"
+          />
+          {errors.email && (
+            <p className="text-red-500 text-sm">Email is required</p>
+          )}
 
-          <div>
-            <label className="block mb-1 font-medium">Password</label>
-            <input
-              type="password"
-              {...register('password', {
-                required: 'Password is required',
-                minLength: {
-                  value: 6,
-                  message: 'Password must be at least 6 characters',
-                },
-              })}
-              className="input input-bordered w-full"
-              placeholder="Password"
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+          <input
+            type="password"
+            {...register('password', { required: true })}
+            className="input input-bordered w-full"
+            placeholder="Password"
+          />
+          {errors.password && (
+            <p className="text-red-500 text-sm">Password is required</p>
+          )}
 
-          <button type="submit" className="btn btn-primary w-full mt-4">
+          <button type="submit" className="btn btn-primary w-full">
             Login
           </button>
-        </form>
-
-        <div className="divider">OR</div>
-
-        <button
-          onClick={handleGoogleSignIn}
-          className="btn btn-outline btn-secondary w-full"
-        >
-          Sign in with Google
-        </button>
-
-        {/* Register Link */}
-        <p className="text-center mt-6 text-sm">
-          Don’t have an account?{' '}
-          <Link
-            to="/register"
-            className="text-blue-600 hover:underline font-medium"
+          <button
+            type="button"
+            onClick={handleGoogle}
+            className="btn btn-outline w-full"
           >
+            Continue with Google
+          </button>
+        </form>
+        <p className="mt-4 text-sm">
+          Don't have an account?{' '}
+          <Link className="text-blue-600" to="/register">
             Register here
           </Link>
         </p>
       </div>
 
-      {/* Right: Icon Section */}
+      {/* Right Side: Icon */}
       <div className="flex justify-center items-center mt-10 md:mt-0 md:ml-10 text-primary text-[8rem]">
-        <FaSignInAlt />
+        <FaSignInAlt className="text-[120px] text-blue-500" />
       </div>
     </div>
   );
