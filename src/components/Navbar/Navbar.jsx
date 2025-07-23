@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router';
 import { useContext } from 'react';
 // import { AuthContext } from '../context/AuthProvider';
-import EduLogo from '../../../assets/edulogo.png';
+import EduLogo from '../../assets/Brands/edulogo.png';
 // import { toast } from 'react-toastify';
 const Navbar = () => {
   // const { user, logout } = useContext(AuthContext);
