@@ -1,15 +1,17 @@
-import { NavLink, useNavigate } from 'react-router';
+import { Link, NavLink, useNavigate } from 'react-router';
 import { useContext } from 'react';
-// import { AuthContext } from '../context/AuthProvider';
-import EduLogo from '../../assets/Brands/edulogo.png';
-// import { toast } from 'react-toastify';
+import EduLogo from '../../assets/Brands/eduLogo.png';
+import { AuthContext } from '../../contexts/AuthContext/AuthContext';
+import { toast } from 'react-toastify';
 const Navbar = () => {
-  // const { user, logout } = useContext(AuthContext);
+  const { user, logOut } = useContext(AuthContext);
+  console.log(user);
+
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logOut();
       toast.success('Logged out successfully!');
       navigate('/login');
     } catch (error) {
@@ -23,22 +25,12 @@ const Navbar = () => {
       <NavLink to="/" className="btn btn-ghost">
         Home
       </NavLink>
-      <NavLink to="/groups" className="btn btn-ghost">
+      <NavLink to="/classes" className="btn btn-ghost">
         All Classes
       </NavLink>
-      <NavLink to="/groups" className="btn btn-ghost">
+      <NavLink to="/teach" className="btn btn-ghost">
         Teach on EduManage
       </NavLink>
-      {/* {user && (
-        <>
-          <NavLink to="/createGroup" className="btn btn-ghost">
-            Create Group
-          </NavLink>
-          <NavLink to="/myGroups" className="btn btn-ghost">
-            My Groups
-          </NavLink>
-        </>
-      )} */}
     </>
   );
 
@@ -88,34 +80,38 @@ const Navbar = () => {
           <div className="hidden md:flex gap-2">{navItems}</div>
 
           {/* User Section */}
-          {/* {user ? (
-            <div className="dropdown dropdown-end">
-              <div
-                tabIndex={0}
-                className="avatar tooltip"
-                data-tooltip-id="user-tooltip"
-              >
-                <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 cursor-pointer">
-                  <img src={user.photoURL} alt="User Avatar" />
+          <div className="navbar-end">
+            {!user ? (
+              <Link to="/login" className="btn btn-outline btn-sm">
+                Sign In
+              </Link>
+            ) : (
+              <div className="dropdown dropdown-end">
+                <div tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                  <div className="w-10 rounded-full ring ring-primary ring-offset-2">
+                    <img
+                      src={user.photoURL || '/default-avatar.png'}
+                      alt="avatar"
+                    />
+                  </div>
                 </div>
+                <ul
+                  tabIndex={0}
+                  className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+                >
+                  <li>
+                    <span className="font-semibold">{user.displayName}</span>
+                  </li>
+                  <li>
+                    <Link to="/dashboard">Dashboard</Link>
+                  </li>
+                  <li>
+                    <button onClick={handleLogout}>Logout</button>
+                  </li>
+                </ul>
               </div>
-
-              <ul
-                tabIndex={0}
-                className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-200 rounded-box w-52"
-              >
-                <li>
-                  <Tooltip id="user-tooltip">{user.displayName}</Tooltip>
-                  <button>Dashboard</button>
-                  <button onClick={handleLogout}>Logout</button>
-                </li>
-              </ul>
-            </div>
-          ) : (
-            <NavLink to="/login" className="btn btn-primary">
-              Login
-            </NavLink>
-          )} */}
+            )}
+          </div>
         </div>
       </div>
     </div>

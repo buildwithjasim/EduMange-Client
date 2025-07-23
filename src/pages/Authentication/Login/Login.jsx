@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaSignInAlt } from 'react-icons/fa';
-import { Link } from 'react-router';
+import { Link, Navigate } from 'react-router';
+import { AuthContext } from '../../../contexts/AuthContext/AuthContext';
 
 const Login = () => {
+  const { loginUser, googleLogin } = useContext(AuthContext);
   const {
     register,
     handleSubmit,
@@ -12,12 +14,18 @@ const Login = () => {
 
   const onSubmit = data => {
     console.log('Login Data:', data);
+    loginUser();
     // Handle login logic here (Firebase Auth + backend)
   };
 
   const handleGoogleSignIn = () => {
-    // Handle Google sign-in logic here
-    console.log('Google Sign-In Clicked');
+    googleLogin()
+      .then(result => {
+        console.log(result);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   return (
