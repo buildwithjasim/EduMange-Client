@@ -4,6 +4,8 @@ import Home from '../pages/Home/Home/Home';
 import AuthLayOut from '../layouts/AuthLayOut';
 import Login from '../pages/Authentication/Login/Login';
 import Register from '../pages/Authentication/Register/Register';
+import DashboardLayout from '../layouts/DashboardLayout';
+import TeacherRequest from '../pages/DashBoard/TeacherRequest';
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +29,17 @@ export const router = createBrowserRouter([
       {
         path: 'register',
         Component: Register,
+      },
+    ],
+  },
+
+  {
+    path: 'dashBoard',
+    Component: DashboardLayout,
+    children: [
+      {
+        path: 'teacher-request',
+        Component: TeacherRequest,
       },
     ],
   },
