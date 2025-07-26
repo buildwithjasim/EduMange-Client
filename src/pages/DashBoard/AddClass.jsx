@@ -1,17 +1,22 @@
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import { useNavigate } from 'react-router';
-import { toast } from 'react-toastify';
+
 import AuthContext from '../../contexts/AuthContext';
 import { useContext } from 'react';
+import Spinner from '../../components/Spinner/Spinner';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
+import { useNavigate } from 'react-router';
+import Swal from 'sweetalert2';
 
 const AddClass = () => {
-  const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { user, loading } = useContext(AuthContext);
   const { register, handleSubmit, reset } = useForm();
+  const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure(); // ✅ must call
+
+  if (loading) return <Spinner />;
 
   const onSubmit = async data => {
-    const payload = {
+    const classData = {
       title: data.title,
       teacherName: user.displayName,
       teacherEmail: user.email,
@@ -20,17 +25,30 @@ const AddClass = () => {
       image: data.image,
     };
 
-    console.log(payload);
-
     try {
-      const res = await axios.post('/teacher/classes', payload);
+      const res = await axiosSecure.post('/teacher/classes', classData);
+
       if (res.data.insertedId) {
-        toast.success('✅ Class added for review!');
+        Swal.fire({
+          icon: 'success',
+          title: '✅ Class Added!',
+          text: 'Your class has been submitted for review.',
+          confirmButtonColor: '#3085d6',
+        });
+
         reset();
-        navigate('/dashboard/teacher/my-classes');
+        navigate('/dashboard/my-classes');
       }
     } catch (err) {
-      toast.error('❌ Failed to add class.');
+      console.error('Submit error:', err); // debug
+      Swal.fire({
+        icon: 'error',
+        title: '❌ Failed to Add Class',
+        text:
+          err.response?.data?.error ||
+          'Something went wrong. Please try again.',
+        confirmButtonColor: '#d33',
+      });
     }
   };
 
