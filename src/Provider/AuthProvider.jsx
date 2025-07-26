@@ -12,6 +12,7 @@ import {
 // import axios from 'axios';
 import AuthContext from '../contexts/AuthContext';
 import { auth } from '../Firebase/firebase.config';
+import axios from 'axios';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -45,29 +46,24 @@ const AuthProvider = ({ children }) => {
   };
 
   // 🔁 Handle user state & JWT
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async currentUser => {
       setUser(currentUser);
+      setLoading(false);
 
       // if (currentUser) {
-      //   const { data } = await axios.post(
-      //     `${import.meta.env.VITE_API_URL}/jwt`,
-      //     {
-      //       email: currentUser.email,
-      //     }
-      //   );
-
-      //   localStorage.setItem('access-token', data.token);
+      //   const { data } = await axios.post('http://localhost:5000/jwt', {
+      //     email: currentUser.email,
+      //   });
+      //   localStorage.setItem('token', data.token);
       // } else {
-      //   localStorage.removeItem('access-token');
+      //   localStorage.removeItem('token');
       // }
-
-      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
-
   const authInfo = {
     user,
     loading,

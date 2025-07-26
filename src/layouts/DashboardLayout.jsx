@@ -1,9 +1,7 @@
-import { useState } from 'react';
 import { FaList, FaPlus, FaUser, FaUserPlus, FaUsers } from 'react-icons/fa';
 import { NavLink, Outlet } from 'react-router';
 
 const DashboardLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navItemStyle = () =>
     `flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-200 transition `;
 
@@ -19,7 +17,6 @@ const DashboardLayout = () => {
               className="btn btn-square btn-ghost"
             >
               <svg
-                onClick={() => sidebarOpen(true)}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -36,7 +33,7 @@ const DashboardLayout = () => {
           </div>
           <div className="mx-2 flex-1 px-2">Dashboard</div>
         </div>
-        {/* page is here */}
+        {/* page content is here */}
         <Outlet></Outlet>
       </div>
 
@@ -53,15 +50,14 @@ const DashboardLayout = () => {
             <NavLink to="/dashboard/add-class" className={navItemStyle}>
               <FaPlus /> Add Class
             </NavLink>
-            <NavLink to="/dashboard/my-classes" className={navItemStyle}>
+            <NavLink
+              to="/dashboard/my-Enrolled-classes"
+              className={navItemStyle}
+            >
               <FaList /> My Enrolled Classes
             </NavLink>
 
-            <NavLink
-              to="/dashboard/teacher-request"
-              className={navItemStyle}
-              onClick={() => setSidebarOpen(false)}
-            >
+            <NavLink to="/dashboard/teacher-request" className={navItemStyle}>
               <FaUserPlus /> Teacher Request
             </NavLink>
             <NavLink to="/dashboard/my-class" className={navItemStyle}>

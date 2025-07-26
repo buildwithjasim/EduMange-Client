@@ -6,6 +6,7 @@ import Login from '../pages/Authentication/Login/Login';
 import Register from '../pages/Authentication/Register/Register';
 import DashboardLayout from '../layouts/DashboardLayout';
 import TeacherRequest from '../pages/DashBoard/TeacherRequest';
+import AddClass from '../pages/DashBoard/AddClass';
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ export const router = createBrowserRouter([
       {
         path: 'teacher-request',
         Component: TeacherRequest,
+      },
+      {
+        path: 'add-class',
+        Component: AddClass,
       },
     ],
   },
