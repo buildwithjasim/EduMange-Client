@@ -82,6 +82,8 @@ const CheckoutForm = ({ classData }) => {
         date: new Date(),
       };
 
+      console.log(paymentData);
+
       try {
         await axiosSecure.post('/payments', paymentData);
         toast.success('Payment successful! You are now enrolled.');

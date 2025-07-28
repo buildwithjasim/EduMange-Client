@@ -1,13 +1,24 @@
 import { useContext } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import AuthContext from '../contexts/AuthContext';
 
-export default function PrivateRoute({ Children }) {
+const PrivateRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
+  const location = useLocation();
+
   if (loading) {
-    <span className="loading loading-dots loading-xl"></span>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    );
   }
+
   if (!user) {
-    <Navigate to="/login"></Navigate>;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
-  return Children;
-}
+
+  return children;
+};
+
+export default PrivateRoute;

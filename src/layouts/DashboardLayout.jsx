@@ -1,7 +1,8 @@
 import { FaList, FaPlus, FaUser, FaUserPlus, FaUsers } from 'react-icons/fa';
 import { Link, NavLink, Outlet } from 'react-router-dom';
-import useUserRole from '../hooks/userRole';
+
 import Spinner from '../components/Spinner/Spinner';
+import useUserRole from '../hooks/userRole';
 
 const DashboardLayout = () => {
   const [role, isRoleLoading] = useUserRole();

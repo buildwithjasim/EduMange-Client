@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import AuthContext from '../../contexts/AuthContext';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import { useForm } from 'react-hook-form';
+import Spinner from '../../components/Spinner/Spinner';
 
 const categories = [
   'Web Development',
@@ -73,8 +74,7 @@ const TeachOnEduManage = () => {
     }
   };
 
-  if (loading || !user)
-    return <p className="p-5 text-center">Loading user info...</p>;
+  if (loading || !user) return <Spinner></Spinner>;
 
   if (userRole === 'teacher') {
     return (

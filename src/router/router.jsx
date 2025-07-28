@@ -18,6 +18,7 @@ import Users from '../pages/DashBoard/Users';
 import MyEnrolledClass from '../pages/DashBoard/MyEnrolledClass';
 import MyEnrollClassDetails from '../pages/MyEnrollClassDetails/MyEnrollClassDetails';
 import MyProfile from '../pages/DashBoard/MyProfile.jsx';
+import PrivateRoute from '../routes/PrivateRoute.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -32,7 +33,11 @@ export const router = createBrowserRouter([
   },
   {
     path: 'TeachOnEduManage',
-    element: <TeachOnEduManage />,
+    element: (
+      <PrivateRoute>
+        <TeachOnEduManage></TeachOnEduManage>
+      </PrivateRoute>
+    ),
   },
   {
     path: 'allClasses',

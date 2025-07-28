@@ -109,7 +109,7 @@ const Navbar = () => {
                 <div tabIndex={0} className="btn btn-ghost btn-circle avatar">
                   <div className="w-10 rounded-full ring ring-primary ring-offset-2">
                     <img
-                      src={user.photoURL || '/default-avatar.png'}
+                      src={user?.photoURL || '/default-avatar.png'}
                       alt="avatar"
                     />
                   </div>
