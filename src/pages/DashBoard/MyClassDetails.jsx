@@ -25,35 +25,27 @@ const MyClassDetails = () => {
       try {
         setLoading(true);
 
-        // Fetch class info (for enrollment count)
-        const classRes = await axiosSecure.get(`/classes/${id}`);
+        const [classRes, assignmentsRes, submissionsRes] = await Promise.all([
+          axiosSecure.get(`/classes/${id}`),
+          axiosSecure.get('/assignments', { params: { classId: id } }),
+          axiosSecure.get('/submissions/count', { params: { classId: id } }),
+        ]);
+
         setClassInfo(classRes.data);
-
-        // Fetch assignments for this class
-        const assignmentsRes = await axiosSecure.get('/assignments', {
-          params: { classId: id },
-        });
         setAssignments(assignmentsRes.data);
-
-        // Fetch total submissions count for this class
-        // Assuming backend returns { count: number }
-        const submissionsRes = await axiosSecure.get('/submissions/count', {
-          params: { classId: id },
-        });
         setTotalSubmissions(submissionsRes.data.count);
-
-        setLoading(false);
       } catch (error) {
         console.error(error);
-        setLoading(false);
         Swal.fire('Error', 'Failed to load class details', 'error');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [id, axiosSecure]);
 
-  // Handle input change for new assignment form
+  // Handle form input changes
   const handleInputChange = e => {
     const { name, value } = e.target;
     setNewAssignment(prev => ({
@@ -62,15 +54,14 @@ const MyClassDetails = () => {
     }));
   };
 
-  // Submit new assignment
+  // Handle new assignment submission
   const handleAddAssignment = async e => {
     e.preventDefault();
 
     const { title, deadline, description } = newAssignment;
 
     if (!title || !deadline || !description) {
-      Swal.fire('Error', 'Please fill in all fields', 'error');
-      return;
+      return Swal.fire('Error', 'Please fill in all fields', 'error');
     }
 
     try {
@@ -83,11 +74,11 @@ const MyClassDetails = () => {
 
       Swal.fire('Success', 'Assignment created', 'success');
 
-      // Clear form & close modal
+      // Clear form
       setNewAssignment({ title: '', deadline: '', description: '' });
       setShowAssignmentModal(false);
 
-      // Update assignment list & count live
+      // Update assignment list and count
       setAssignments(prev => [...prev, { title, deadline, description }]);
     } catch (error) {
       console.error(error);
@@ -95,60 +86,75 @@ const MyClassDetails = () => {
     }
   };
 
-  if (loading)
-    return <p className="text-center mt-10">Loading class details...</p>;
+  if (loading) {
+    return (
+      <p className="text-center mt-10 text-lg font-semibold">
+        Loading class details...
+      </p>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">{classInfo?.title}</h1>
+    <div className="max-w-5xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-8 text-center">
+        {classInfo?.title}
+      </h1>
 
       {/* Class Progress Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="card bg-base-200 p-4 rounded shadow text-center">
-          <h3 className="text-xl font-semibold mb-2">Total Enrollment</h3>
-          <p className="text-4xl font-bold">{classInfo?.enrolled || 0}</p>
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="bg-green-100 p-6 rounded-lg shadow text-center">
+          <h3 className="text-xl font-semibold mb-2">Total Enrollments</h3>
+          <p className="text-4xl font-bold text-green-800">
+            {classInfo?.enrolled || 0}
+          </p>
         </div>
-        <div className="card bg-base-200 p-4 rounded shadow text-center">
+        <div className="bg-blue-100 p-6 rounded-lg shadow text-center">
           <h3 className="text-xl font-semibold mb-2">Total Assignments</h3>
-          <p className="text-4xl font-bold">{assignments.length}</p>
+          <p className="text-4xl font-bold text-blue-800">
+            {assignments.length}
+          </p>
         </div>
-        <div className="card bg-base-200 p-4 rounded shadow text-center">
+        <div className="bg-purple-100 p-6 rounded-lg shadow text-center">
           <h3 className="text-xl font-semibold mb-2">
             Total Assignment Submissions
           </h3>
-          <p className="text-4xl font-bold">{totalSubmissions}</p>
+          <p className="text-4xl font-bold text-purple-800">
+            {totalSubmissions}
+          </p>
         </div>
-      </div>
+      </section>
 
       {/* Assignment Section */}
-      <div className="mb-4 flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">Assignments</h2>
-        <button
-          onClick={() => setShowAssignmentModal(true)}
-          className="btn btn-primary"
-        >
-          Create Assignment
-        </button>
-      </div>
+      <section>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold">Class Assignments</h2>
+          <button
+            onClick={() => setShowAssignmentModal(true)}
+            className="btn btn-accent"
+          >
+            Create Assignment
+          </button>
+        </div>
 
-      {assignments.length === 0 ? (
-        <p>No assignments created yet.</p>
-      ) : (
-        <ul className="space-y-4">
-          {assignments.map((assignment, idx) => (
-            <li key={idx} className="border p-4 rounded shadow">
-              <h3 className="text-xl font-semibold">{assignment.title}</h3>
-              <p>
-                <strong>Deadline: </strong>
-                {new Date(assignment.deadline).toLocaleDateString()}
-              </p>
-              <p>{assignment.description}</p>
-            </li>
-          ))}
-        </ul>
-      )}
+        {assignments.length === 0 ? (
+          <p className="text-gray-500">No assignments created yet.</p>
+        ) : (
+          <ul className="space-y-4">
+            {assignments.map((a, idx) => (
+              <li key={idx} className="bg-base-200 p-4 rounded shadow">
+                <h3 className="text-lg font-semibold">{a.title}</h3>
+                <p>
+                  <strong>Deadline:</strong>{' '}
+                  {new Date(a.deadline).toLocaleDateString()}
+                </p>
+                <p>{a.description}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
-      {/* Assignment Creation Modal */}
+      {/* Modal */}
       {showAssignmentModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg">
@@ -191,7 +197,7 @@ const MyClassDetails = () => {
                 />
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-3">
                 <button
                   type="button"
                   className="btn btn-outline"
