@@ -2,10 +2,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import Spinner from '../../components/Spinner/Spinner';
-import { Link } from 'react-router-dom';
+
 const TeacherRequests = () => {
   const queryClient = useQueryClient();
-
   const axiosSecure = useAxiosSecure();
 
   // 🔍 Fetch all teacher requests
@@ -17,7 +16,7 @@ const TeacherRequests = () => {
     },
   });
 
-  //  Approve request mutation
+  // ✅ Approve request
   const approveMutation = useMutation({
     mutationFn: async id => {
       await axiosSecure.patch(`/admin/teacher-requests/approve/${id}`);
@@ -29,7 +28,7 @@ const TeacherRequests = () => {
     onError: () => toast.error('Approval failed'),
   });
 
-  //  Reject request mutation
+  // ❌ Reject request
   const rejectMutation = useMutation({
     mutationFn: async id => {
       await axiosSecure.patch(`/admin/teacher-requests/reject/${id}`);
@@ -41,7 +40,7 @@ const TeacherRequests = () => {
     onError: () => toast.error('Rejection failed'),
   });
 
-  if (isLoading) return <Spinner></Spinner>;
+  if (isLoading) return <Spinner />;
 
   return (
     <div className="p-6">
@@ -64,6 +63,7 @@ const TeacherRequests = () => {
             {requests.map((request, index) => {
               const isFinal =
                 request.status === 'accepted' || request.status === 'rejected';
+
               return (
                 <tr key={request._id} className="border-b hover:bg-gray-50">
                   <td>{index + 1}</td>
@@ -80,7 +80,7 @@ const TeacherRequests = () => {
                   <td>{request.category}</td>
                   <td>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs ${
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
                         request.status === 'pending'
                           ? 'bg-yellow-100 text-yellow-700'
                           : request.status === 'accepted'
@@ -92,22 +92,20 @@ const TeacherRequests = () => {
                     </span>
                   </td>
                   <td className="flex gap-2 justify-center">
-                    <Link
-                      variant="success"
-                      size="sm"
-                      disabled={isFinal}
+                    <button
+                      className="btn btn-success btn-sm"
+                      disabled={isFinal || approveMutation.isPending}
                       onClick={() => approveMutation.mutate(request._id)}
                     >
                       Approve
-                    </Link>
-                    <Link
-                      variant="destructive"
-                      size="sm"
-                      disabled={isFinal}
+                    </button>
+                    <button
+                      className="btn btn-error btn-sm"
+                      disabled={isFinal || rejectMutation.isPending}
                       onClick={() => rejectMutation.mutate(request._id)}
                     >
                       Reject
-                    </Link>
+                    </button>
                   </td>
                 </tr>
               );
