@@ -1,17 +1,16 @@
 import { useForm } from 'react-hook-form';
-
 import AuthContext from '../../contexts/AuthContext';
 import { useContext } from 'react';
 import Spinner from '../../components/Spinner/Spinner';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
-import { useNavigate } from 'react-router';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const AddClass = () => {
   const { user, loading } = useContext(AuthContext);
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
-  const axiosSecure = useAxiosSecure(); // ✅ must call
+  const axiosSecure = useAxiosSecure();
 
   if (loading) return <Spinner />;
 
@@ -20,7 +19,7 @@ const AddClass = () => {
       title: data.title,
       teacherName: user.displayName,
       teacherEmail: user.email,
-      price: data.price,
+      price: parseFloat(data.price),
       description: data.description,
       image: data.image,
     };
@@ -32,15 +31,14 @@ const AddClass = () => {
         Swal.fire({
           icon: 'success',
           title: '✅ Class Added!',
-          text: 'Your class has been submitted for review.',
-          confirmButtonColor: '#3085d6',
+          text: 'Your class has been submitted for admin review.',
+          confirmButtonColor: '#2563eb',
         });
 
         reset();
-        navigate('/dashboard/my-classes');
+        navigate('/dashboard/my-class');
       }
     } catch (err) {
-      console.error('Submit error:', err); // debug
       Swal.fire({
         icon: 'error',
         title: '❌ Failed to Add Class',
@@ -53,60 +51,91 @@ const AddClass = () => {
   };
 
   return (
-    <div className="w-full p-15 mx-auto bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-4">➕ Add New Class</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <div className="max-w-3xl mx-auto p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8">
+      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+        ➕ Submit a New Class
+      </h2>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label>Title</label>
+          <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+            Class Title
+          </label>
           <input
             {...register('title')}
             required
+            placeholder="e.g. Advanced JavaScript"
             className="input input-bordered w-full"
           />
         </div>
-        <div>
-          <label>Your Name</label>
-          <input
-            value={user.displayName}
-            readOnly
-            className="input input-bordered w-full bg-gray-100"
-          />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+              Your Name
+            </label>
+            <input
+              value={user.displayName}
+              readOnly
+              className="input input-bordered w-full bg-gray-100 dark:bg-gray-700"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+              Email
+            </label>
+            <input
+              value={user.email}
+              readOnly
+              className="input input-bordered w-full bg-gray-100 dark:bg-gray-700"
+            />
+          </div>
         </div>
+
         <div>
-          <label>Email</label>
-          <input
-            value={user.email}
-            readOnly
-            className="input input-bordered w-full bg-gray-100"
-          />
-        </div>
-        <div>
-          <label>Price</label>
+          <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+            Price (USD)
+          </label>
           <input
             type="number"
             {...register('price')}
             required
+            placeholder="e.g. 29.99"
+            step="0.01"
             className="input input-bordered w-full"
           />
         </div>
+
         <div>
-          <label>Description</label>
+          <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+            Description
+          </label>
           <textarea
             {...register('description')}
             required
-            className="textarea textarea-bordered w-full"
+            placeholder="Brief description about the course"
+            className="textarea textarea-bordered w-full min-h-[100px]"
           />
         </div>
+
         <div>
-          <label>Image URL</label>
+          <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+            Image URL
+          </label>
           <input
             {...register('image')}
             required
+            placeholder="Paste image URL here"
             className="input input-bordered w-full"
           />
         </div>
-        <button className="btn btn-primary w-full" type="submit">
-          Add Class
+
+        <button
+          type="submit"
+          className="btn btn-primary w-full text-white text-lg tracking-wide"
+        >
+          Submit Class for Review
         </button>
       </form>
     </div>

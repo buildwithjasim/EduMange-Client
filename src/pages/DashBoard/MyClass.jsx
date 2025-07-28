@@ -1,165 +1,244 @@
-import { useContext, useEffect, useState } from 'react';
-import useAxiosSecure from '../../hooks/useAxiosSecure';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { Link } from 'react-router';
+import { useNavigate } from 'react-router-dom';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
+import { useContext } from 'react';
 import AuthContext from '../../contexts/AuthContext';
-import Spinner from '../../components/Spinner/Spinner';
 
-const MyClasses = () => {
-  const { user, loading } = useContext(AuthContext);
+const MyClass = () => {
+  const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
-  const [classes, setClasses] = useState([]);
-  const [updatingClass, setUpdatingClass] = useState(null);
+  const navigate = useNavigate();
 
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedClass, setSelectedClass] = useState(null); // for update modal
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+  // Fetch teacher classes on mount
   useEffect(() => {
-    if (user?.email) {
-      axiosSecure
-        .get(`/teacher/classes?email=${user.email}`)
-        .then(res => setClasses(res.data))
-        .catch(err => console.error(err));
-    }
+    if (!user?.email) return;
+    setLoading(true);
+    axiosSecure
+      .get('/teacher/classes', { params: { email: user.email } })
+      .then(res => {
+        setClasses(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
   }, [user, axiosSecure]);
 
-  const handleDelete = async id => {
-    const confirm = await Swal.fire({
+  // Delete confirmation + delete action
+  const handleDelete = classId => {
+    Swal.fire({
       title: 'Are you sure?',
       text: 'You will not be able to recover this class!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, delete it!',
-    });
-
-    if (confirm.isConfirmed) {
-      try {
-        const res = await axiosSecure.delete(`/teacher/classes/${id}`);
-        if (res.data.deletedCount > 0) {
-          Swal.fire('Deleted!', 'Your class has been deleted.', 'success');
-          setClasses(prev => prev.filter(cls => cls._id !== id));
+    }).then(async result => {
+      if (result.isConfirmed) {
+        try {
+          await axiosSecure.delete(`/teacher/classes/${classId}`);
+          Swal.fire('Deleted!', 'Class has been deleted.', 'success');
+          setClasses(prev => prev.filter(c => c._id !== classId));
+        } catch (error) {
+          console.error(error);
+          Swal.fire('Error!', 'Failed to delete the class.', 'error');
         }
-      } catch (error) {
-        Swal.fire('Error!', 'Failed to delete the class.', 'error');
       }
-    }
+    });
   };
 
-  const handleUpdate = async e => {
+  // Open update modal
+  const openUpdateModal = classData => {
+    setSelectedClass(classData);
+    setShowUpdateModal(true);
+  };
+
+  // Handle update submit
+  const handleUpdateSubmit = async e => {
     e.preventDefault();
-    const form = e.target;
-    const updated = {
-      title: form.title.value,
-      price: parseFloat(form.price.value),
-      description: form.description.value,
-      image: form.image.value,
-    };
-
+    if (!selectedClass) return;
     try {
-      const res = await axiosSecure.patch(
-        `/teacher/classes/${updatingClass._id}`,
-        updated
+      const { _id, price, description, title, image } = selectedClass;
+      // Only send fields that can be updated
+      await axiosSecure.patch(`/teacher/classes/${_id}`, {
+        price: parseFloat(price),
+        description,
+        title,
+        image,
+      });
+
+      Swal.fire('Success', 'Class updated successfully', 'success');
+      setShowUpdateModal(false);
+      // Refresh the list with updated data
+      setClasses(prev =>
+        prev.map(c =>
+          c._id === _id ? { ...c, price, description, title, image } : c
+        )
       );
-      if (res.data.modifiedCount > 0) {
-        Swal.fire('Success!', 'Class updated.', 'success');
-        setUpdatingClass(null);
-        // Re-fetch classes
-        const refresh = await axiosSecure.get(
-          `/teacher/classes?email=${user.email}`
-        );
-        setClasses(refresh.data);
-      }
     } catch (error) {
-      Swal.fire('Error!', 'Update failed.', 'error');
+      console.error(error);
+      Swal.fire('Error', 'Failed to update class', 'error');
     }
   };
 
-  if (loading) return <Spinner />;
+  if (loading)
+    return <p className="text-center mt-10">Loading your classes...</p>;
 
   return (
-    <div className="w-full p-5">
-      <h2 className="text-2xl font-bold mb-4">📚 My Classes</h2>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">My Classes</h1>
+
+      {classes.length === 0 && (
+        <p className="text-center">You have not added any classes yet.</p>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {classes.map(cls => (
-          <div key={cls._id} className="card bg-base-100 shadow-xl">
-            <figure>
-              <img
-                src={cls.image}
-                alt={cls.title}
-                className="h-48 w-full object-cover"
-              />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title">{cls.title}</h2>
-              <p>{cls.description}</p>
+          <div
+            key={cls._id}
+            className="border rounded shadow p-4 flex flex-col justify-between"
+          >
+            <div>
+              <h2 className="text-xl font-semibold">{cls.title}</h2>
               <p>
-                <b>Price:</b> ${cls.price}
+                <strong>Teacher:</strong> {cls.teacherName} ({cls.teacherEmail})
               </p>
               <p>
-                <b>Status:</b> {cls.status}
+                <strong>Price:</strong> ${cls.price}
               </p>
-              <div className="flex gap-2 mt-4">
-                <button
-                  className="btn btn-warning btn-sm"
-                  onClick={() => setUpdatingClass(cls)}
-                >
-                  Update
-                </button>
-                <button
-                  className="btn btn-error btn-sm"
-                  onClick={() => handleDelete(cls._id)}
-                >
-                  Delete
-                </button>
-                <Link
-                  to={`/dashboard/my-class/${cls._id}`}
-                  className={`btn btn-sm ${
-                    cls.status === 'approved' ? 'btn-primary' : 'btn-disabled'
+              <p className="mt-2">{cls.description}</p>
+              {cls.image && (
+                <img
+                  src={cls.image}
+                  alt={cls.title}
+                  className="mt-4 w-full h-40 object-cover rounded"
+                />
+              )}
+              <p className="mt-2 font-semibold">
+                Status:
+                <span
+                  className={`ml-1 ${
+                    cls.status === 'approved'
+                      ? 'text-green-600'
+                      : cls.status === 'pending'
+                      ? 'text-yellow-600'
+                      : 'text-red-600'
                   }`}
                 >
-                  See Details
-                </Link>
-              </div>
+                  {cls.status}
+                </span>
+              </p>
+            </div>
+
+            <div className="mt-4 flex gap-2 justify-end">
+              <button
+                onClick={() => openUpdateModal(cls)}
+                className="btn btn-sm btn-warning"
+              >
+                Update
+              </button>
+
+              <button
+                onClick={() => handleDelete(cls._id)}
+                className="btn btn-sm btn-error"
+              >
+                Delete
+              </button>
+
+              <button
+                onClick={() => navigate(`/dashboard/my-class/${cls._id}`)}
+                className="btn btn-sm btn-primary"
+                disabled={cls.status !== 'approved'}
+                title={
+                  cls.status !== 'approved'
+                    ? 'Wait until admin approves this class'
+                    : 'See class details'
+                }
+              >
+                See Details
+              </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Modal for update */}
-      {updatingClass && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-xl max-w-md w-full">
-            <h3 className="text-xl font-bold mb-4">✏️ Update Class</h3>
-            <form onSubmit={handleUpdate} className="space-y-4">
-              <input
-                type="text"
-                name="title"
-                defaultValue={updatingClass.title}
-                required
-                className="input input-bordered w-full"
-              />
-              <input
-                type="number"
-                name="price"
-                defaultValue={updatingClass.price}
-                required
-                className="input input-bordered w-full"
-              />
-              <textarea
-                name="description"
-                defaultValue={updatingClass.description}
-                required
-                className="textarea textarea-bordered w-full"
-              ></textarea>
-              <input
-                type="text"
-                name="image"
-                defaultValue={updatingClass.image}
-                required
-                className="input input-bordered w-full"
-              />
-              <div className="flex justify-end gap-3">
+      {/* Update Modal */}
+      {showUpdateModal && selectedClass && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg p-6 w-11/12 max-w-lg">
+            <h3 className="text-xl font-bold mb-4">Update Class</h3>
+            <form onSubmit={handleUpdateSubmit} className="space-y-4">
+              <div>
+                <label className="block font-medium">Title</label>
+                <input
+                  type="text"
+                  className="input input-bordered w-full"
+                  value={selectedClass.title}
+                  onChange={e =>
+                    setSelectedClass(prev => ({
+                      ...prev,
+                      title: e.target.value,
+                    }))
+                  }
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-medium">Price</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  className="input input-bordered w-full"
+                  value={selectedClass.price}
+                  onChange={e =>
+                    setSelectedClass(prev => ({
+                      ...prev,
+                      price: e.target.value,
+                    }))
+                  }
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-medium">Description</label>
+                <textarea
+                  className="textarea textarea-bordered w-full"
+                  value={selectedClass.description}
+                  onChange={e =>
+                    setSelectedClass(prev => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-medium">Image URL</label>
+                <input
+                  type="text"
+                  className="input input-bordered w-full"
+                  value={selectedClass.image || ''}
+                  onChange={e =>
+                    setSelectedClass(prev => ({
+                      ...prev,
+                      image: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
-                  className="btn"
-                  onClick={() => setUpdatingClass(null)}
+                  className="btn btn-outline"
+                  onClick={() => setShowUpdateModal(false)}
                 >
                   Cancel
                 </button>
@@ -175,4 +254,4 @@ const MyClasses = () => {
   );
 };
 
-export default MyClasses;
+export default MyClass;

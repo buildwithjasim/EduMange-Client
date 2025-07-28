@@ -1,8 +1,8 @@
-import { Link, Navigate, NavLink } from 'react-router';
 import { useContext } from 'react';
 import EduLogo from '../../assets/Brands/eduLogo.png';
 import Swal from 'sweetalert2';
 import AuthContext from '../../contexts/AuthContext';
+import { Link, Navigate, NavLink } from 'react-router-dom';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -44,10 +44,10 @@ const Navbar = () => {
       <NavLink to="/" className="btn btn-ghost">
         Home
       </NavLink>
-      <NavLink to="/classes" className="btn btn-ghost">
+      <NavLink to="/allClasses" className="btn btn-ghost">
         All Classes
       </NavLink>
-      <NavLink to="/teach" className="btn btn-ghost">
+      <NavLink to="/TeachOnEduManage" className="btn btn-ghost">
         Teach on EduManage
       </NavLink>
     </>

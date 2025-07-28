@@ -1,9 +1,10 @@
-import { useForm } from 'react-hook-form';
-import { useNavigate, Link } from 'react-router';
 import { useContext } from 'react';
 import { FaSignInAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import AuthContext from '../../../contexts/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { saveUserInDb } from '../../../api/utils';
 
 const Login = () => {
   const { loginUser, signInWithGoogle } = useContext(AuthContext);
@@ -17,7 +18,17 @@ const Login = () => {
 
   const onSubmit = async data => {
     try {
-      await loginUser(data.email, data.password);
+      const result = await loginUser(data.email, data.password);
+      const userData = {
+        name: result?.user?.displayName,
+        email: result?.user?.email,
+        image: result?.user?.photoURL,
+      };
+      // update user
+      saveUserInDb(userData);
+
+      console.log(userData);
+
       Swal.fire('Success!', 'Logged in successfully!', 'success');
       navigate('/');
     } catch (error) {
@@ -27,7 +38,14 @@ const Login = () => {
 
   const handleGoogle = async () => {
     try {
-      await signInWithGoogle();
+      const result = await signInWithGoogle();
+
+      const userData = {
+        name: result?.user?.displayName,
+        email: result?.user?.email,
+        image: result?.user?.photoURL,
+      };
+      saveUserInDb(userData);
       Swal.fire('Success!', 'Signed in with Google', 'success');
       navigate('/');
     } catch (error) {

@@ -1,10 +1,9 @@
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
 import { useContext } from 'react';
-
 import { FaUserPlus } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import AuthContext from '../../../contexts/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const { registerUser, updateProfile, signInWithGoogle } =
@@ -26,7 +25,7 @@ const Register = () => {
       });
 
       Swal.fire('Success!', 'Account created successfully!', 'success');
-      navigate('/');
+      navigate('/login');
     } catch (error) {
       Swal.fire('Error', error.message);
     }
