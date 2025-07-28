@@ -21,9 +21,9 @@ const DashboardLayout = () => {
     <div className="drawer lg:drawer-open min-h-screen bg-base-100">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
 
-      {/* Main content */}
+      {/* Page Content */}
       <div className="drawer-content flex flex-col">
-        {/* Top Navbar (Mobile Only) */}
+        {/* Mobile Top Navbar */}
         <div className="navbar bg-base-200 lg:hidden shadow-md px-4">
           <div className="flex-1">
             <label htmlFor="my-drawer-2" className="btn btn-ghost btn-square">
@@ -46,94 +46,98 @@ const DashboardLayout = () => {
           </div>
         </div>
 
-        {/* Page content */}
+        {/* Dynamic Outlet Page */}
         <div className="p-4">
           <Outlet />
         </div>
       </div>
 
-      <aside className="w-80 min-h-full bg-base-200 text-base-content shadow-md flex flex-col">
-        {/* Sidebar Header */}
-        <Link
-          to="/"
-          className="text-center py-6 border-b border-gray-300 dark:border-gray-700"
-        >
-          <h2 className="text-2xl font-bold text-primary">EduManage</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Dashboard Menu
-          </p>
-        </Link>
+      {/* Sidebar */}
+      <div className="drawer-side z-40">
+        <label htmlFor="my-drawer-2" className="drawer-overlay"></label>
+        <aside className="w-72 min-h-full bg-base-200 text-base-content shadow-md flex flex-col">
+          {/* Sidebar Header */}
+          <Link
+            to="/"
+            className="text-center py-6 border-b border-gray-300 dark:border-gray-700"
+          >
+            <h2 className="text-2xl font-bold text-primary">EduManage</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Dashboard Menu
+            </p>
+          </Link>
 
-        {/* Sidebar Menu (takes full height) */}
-        <ul className="menu p-4 space-y-2 flex-grow">
-          {role === 'student' && (
-            <>
-              <li className="text-xs font-semibold text-gray-500 uppercase mt-2">
-                Student Panel
-              </li>
-              <li>
-                <NavLink
-                  to="/dashboard/my-enrolled-classes"
-                  className={navItemStyle}
-                >
-                  <FaList /> My Enrolled Classes
-                </NavLink>
-              </li>
-            </>
-          )}
+          {/* Sidebar Menu */}
+          <ul className="menu p-4 space-y-2 flex-grow overflow-y-auto">
+            {role === 'student' && (
+              <>
+                <li className="text-xs font-semibold text-gray-500 uppercase mt-2">
+                  Student Panel
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/my-enrolled-classes"
+                    className={navItemStyle}
+                  >
+                    <FaList /> My Enrolled Classes
+                  </NavLink>
+                </li>
+              </>
+            )}
 
-          {role === 'teacher' && (
-            <>
-              <li className="text-xs font-semibold text-gray-500 uppercase mt-2">
-                Teacher Panel
-              </li>
-              <li>
-                <NavLink to="/dashboard/add-class" className={navItemStyle}>
-                  <FaPlus /> Add Class
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/dashboard/my-class" className={navItemStyle}>
-                  <FaList /> My Class
-                </NavLink>
-              </li>
-            </>
-          )}
+            {role === 'teacher' && (
+              <>
+                <li className="text-xs font-semibold text-gray-500 uppercase mt-2">
+                  Teacher Panel
+                </li>
+                <li>
+                  <NavLink to="/dashboard/add-class" className={navItemStyle}>
+                    <FaPlus /> Add Class
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/dashboard/my-class" className={navItemStyle}>
+                    <FaList /> My Class
+                  </NavLink>
+                </li>
+              </>
+            )}
 
-          {role === 'admin' && (
-            <>
-              <li className="text-xs font-semibold text-gray-500 uppercase mt-2">
-                Admin Panel
-              </li>
-              <li>
-                <NavLink
-                  to="/dashboard/teacher-request"
-                  className={navItemStyle}
-                >
-                  <FaUserPlus /> Teacher Request
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/dashboard/users" className={navItemStyle}>
-                  <FaUsers /> Users
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/dashboard/all-classes" className={navItemStyle}>
-                  <FaList /> All Classes
-                </NavLink>
-              </li>
-            </>
-          )}
-        </ul>
+            {role === 'admin' && (
+              <>
+                <li className="text-xs font-semibold text-gray-500 uppercase mt-2">
+                  Admin Panel
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/teacher-request"
+                    className={navItemStyle}
+                  >
+                    <FaUserPlus /> Teacher Request
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/dashboard/users" className={navItemStyle}>
+                    <FaUsers /> Users
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/dashboard/all-classes" className={navItemStyle}>
+                    <FaList /> All Classes
+                  </NavLink>
+                </li>
+              </>
+            )}
+          </ul>
 
-        {/* My Profile always at the bottom */}
-        <div className="border-t p-4">
-          <NavLink to="/dashboard/my-profile" className={navItemStyle}>
-            <FaUser /> My Profile
-          </NavLink>
-        </div>
-      </aside>
+          {/* Profile (Always Bottom) */}
+          <div className="border-t p-4">
+            <NavLink to="/dashboard/my-profile" className={navItemStyle}>
+              <FaUser /> My Profile
+            </NavLink>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 };
