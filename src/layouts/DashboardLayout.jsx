@@ -1,13 +1,19 @@
 import { FaList, FaPlus, FaUser, FaUserPlus, FaUsers } from 'react-icons/fa';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
+import useUserRole from '../hooks/userRole';
+import Spinner from '../components/Spinner/Spinner';
 
 const DashboardLayout = () => {
+  const [role, isRoleLoading] = useUserRole();
+
+  if (isRoleLoading) return <Spinner />;
+
   const navItemStyle = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-2 rounded-lg transition-all font-medium
+    `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all 
      ${
        isActive
-         ? 'bg-primary text-white shadow-md'
-         : 'hover:bg-gray-100 text-gray-700 dark:text-gray-300'
+         ? 'bg-primary text-white shadow'
+         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
      }`;
 
   return (
@@ -16,14 +22,10 @@ const DashboardLayout = () => {
 
       {/* Main content */}
       <div className="drawer-content flex flex-col">
-        {/* Mobile navbar */}
-        <div className="navbar bg-base-300 lg:hidden shadow-sm">
-          <div className="flex-none">
-            <label
-              htmlFor="my-drawer-2"
-              aria-label="open sidebar"
-              className="btn btn-square btn-ghost"
-            >
+        {/* Top Navbar (Mobile Only) */}
+        <div className="navbar bg-base-200 lg:hidden shadow-md px-4">
+          <div className="flex-1">
+            <label htmlFor="my-drawer-2" className="btn btn-ghost btn-square">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -34,14 +36,12 @@ const DashboardLayout = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth="2"
+                  strokeWidth={2}
                   d="M4 6h16M4 12h16M4 18h16"
                 />
               </svg>
             </label>
-          </div>
-          <div className="flex-1 text-xl font-semibold px-2">
-            🎓 EduManage Dashboard
+            <span className="text-lg font-semibold ml-2">🎓 EduManage</span>
           </div>
         </div>
 
@@ -51,48 +51,88 @@ const DashboardLayout = () => {
         </div>
       </div>
 
-      {/* Sidebar */}
-      <div className="drawer-side">
-        <label htmlFor="my-drawer-2" className="drawer-overlay"></label>
-        <aside className="w-80 min-h-full bg-base-200 text-base-content shadow-md">
-          <div className="text-center py-6 border-b">
-            <h2 className="text-xl font-bold text-primary">EduManage</h2>
-            <p className="text-sm text-gray-500">Dashboard Menu</p>
-          </div>
-          <ul className="menu p-4 space-y-1">
-            <NavLink to="/dashboard/add-class" className={navItemStyle}>
-              <FaPlus /> Add Class
-            </NavLink>
+      <aside className="w-80 min-h-full bg-base-200 text-base-content shadow-md flex flex-col">
+        {/* Sidebar Header */}
+        <Link
+          to="/"
+          className="text-center py-6 border-b border-gray-300 dark:border-gray-700"
+        >
+          <h2 className="text-2xl font-bold text-primary">EduManage</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Dashboard Menu
+          </p>
+        </Link>
 
-            <NavLink
-              to="/dashboard/my-enrolled-classes"
-              className={navItemStyle}
-            >
-              <FaList /> My Enrolled Classes
-            </NavLink>
+        {/* Sidebar Menu (takes full height) */}
+        <ul className="menu p-4 space-y-2 flex-grow">
+          {role === 'student' && (
+            <>
+              <li className="text-xs font-semibold text-gray-500 uppercase mt-2">
+                Student Panel
+              </li>
+              <li>
+                <NavLink
+                  to="/dashboard/my-enrolled-classes"
+                  className={navItemStyle}
+                >
+                  <FaList /> My Enrolled Classes
+                </NavLink>
+              </li>
+            </>
+          )}
 
-            <NavLink to="/dashboard/teacher-request" className={navItemStyle}>
-              <FaUserPlus /> Teacher Request
-            </NavLink>
+          {role === 'teacher' && (
+            <>
+              <li className="text-xs font-semibold text-gray-500 uppercase mt-2">
+                Teacher Panel
+              </li>
+              <li>
+                <NavLink to="/dashboard/add-class" className={navItemStyle}>
+                  <FaPlus /> Add Class
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/my-class" className={navItemStyle}>
+                  <FaList /> My Class
+                </NavLink>
+              </li>
+            </>
+          )}
 
-            <NavLink to="/dashboard/my-class" className={navItemStyle}>
-              <FaList /> My Class
-            </NavLink>
+          {role === 'admin' && (
+            <>
+              <li className="text-xs font-semibold text-gray-500 uppercase mt-2">
+                Admin Panel
+              </li>
+              <li>
+                <NavLink
+                  to="/dashboard/teacher-request"
+                  className={navItemStyle}
+                >
+                  <FaUserPlus /> Teacher Request
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/users" className={navItemStyle}>
+                  <FaUsers /> Users
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/all-classes" className={navItemStyle}>
+                  <FaList /> All Classes
+                </NavLink>
+              </li>
+            </>
+          )}
+        </ul>
 
-            <NavLink to="/dashboard/users" className={navItemStyle}>
-              <FaUsers /> Users
-            </NavLink>
-
-            <NavLink to="/dashboard/all-classes" className={navItemStyle}>
-              <FaList /> All Classes
-            </NavLink>
-
-            <NavLink to="/dashboard/my-profile" className={navItemStyle}>
-              <FaUser /> My Profile
-            </NavLink>
-          </ul>
-        </aside>
-      </div>
+        {/* My Profile always at the bottom */}
+        <div className="border-t p-4">
+          <NavLink to="/dashboard/my-profile" className={navItemStyle}>
+            <FaUser /> My Profile
+          </NavLink>
+        </div>
+      </aside>
     </div>
   );
 };

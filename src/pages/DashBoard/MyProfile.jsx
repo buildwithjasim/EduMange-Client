@@ -4,6 +4,8 @@ import useAxiosSecure from '../../hooks/useAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '../../components/Spinner/Spinner';
 
+import { data } from 'autoprefixer';
+
 const MyProfile = () => {
   const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
@@ -16,6 +18,8 @@ const MyProfile = () => {
       return res.data;
     },
   });
+
+  console.log(userInfo);
 
   if (isLoading || !user) {
     return <Spinner></Spinner>;

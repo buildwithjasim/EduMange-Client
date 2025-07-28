@@ -4,6 +4,7 @@ import { FaUserPlus } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import AuthContext from '../../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { saveUserInDb } from '../../../api/utils';
 
 const Register = () => {
   const { registerUser, updateProfile, signInWithGoogle } =
@@ -24,6 +25,13 @@ const Register = () => {
         photoURL: photoURL || '',
       });
 
+      const userData = {
+        name,
+        email,
+        photoURL,
+      };
+      // save user data
+      saveUserInDb(userData);
       Swal.fire('Success!', 'Account created successfully!', 'success');
       navigate('/login');
     } catch (error) {
@@ -33,7 +41,14 @@ const Register = () => {
 
   const handleGoogle = async () => {
     try {
-      await signInWithGoogle();
+      const result = await signInWithGoogle();
+      const userData = {
+        name: result?.user?.displayName,
+        email: result?.user?.email,
+        image: result?.user?.photoURL,
+      };
+
+      saveUserInDb(userData);
       Swal.fire('Success!', 'Signed in with Google', 'success');
       navigate('/');
     } catch (error) {
