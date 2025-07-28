@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import { useContext } from 'react';
 import AuthContext from '../../contexts/AuthContext';
+import Spinner from '../../components/Spinner/Spinner';
 
 const MyClass = () => {
   const { user } = useContext(AuthContext);
@@ -87,8 +88,7 @@ const MyClass = () => {
     }
   };
 
-  if (loading)
-    return <p className="text-center mt-10">Loading your classes...</p>;
+  if (loading) return <Spinner></Spinner>;
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -156,7 +156,7 @@ const MyClass = () => {
                 className="btn btn-sm btn-primary"
                 disabled={cls.status !== 'approved'}
                 title={
-                  cls.status !== 'approved'
+                  cls.status !== 'accepted'
                     ? 'Wait until admin approves this class'
                     : 'See class details'
                 }

@@ -68,7 +68,7 @@ const AllClass = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-            {visibleClasses.map(cls => (
+            {classes.map(cls => (
               <tr
                 key={cls._id}
                 className="hover:bg-gray-50 dark:hover:bg-gray-700 transition"
@@ -128,10 +128,12 @@ const AllClass = () => {
                     </Link>
                   ) : (
                     <button
-                      className="btn btn-sm bg-gray-400 text-white cursor-not-allowed"
+                      className={`btn btn-sm text-white cursor-not-allowed ${
+                        cls.status === 'rejected' ? 'bg-red-400' : 'bg-gray-400'
+                      }`}
                       disabled
                     >
-                      Disabled
+                      {cls.status === 'rejected' ? 'Rejected' : 'Pending'}
                     </button>
                   )}
                 </td>
