@@ -41,7 +41,11 @@ export const router = createBrowserRouter([
   },
   {
     path: 'allClasses',
-    element: <AllClasses />,
+    element: (
+      <PrivateRoute>
+        <AllClasses></AllClasses>
+      </PrivateRoute>
+    ),
   },
   {
     path: '/class/:id',

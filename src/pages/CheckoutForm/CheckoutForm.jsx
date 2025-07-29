@@ -1,53 +1,44 @@
-import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
+import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-
-import AuthContext from '../../contexts/AuthContext';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
+import AuthContext from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const CheckoutForm = ({ classData }) => {
+  const { user } = useContext(AuthContext);
+  const [error, setError] = useState('');
+  const [clientSecret, setClientSecret] = useState('');
+  const [processing, setProcessing] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
-  const [error, setError] = useState('');
-  const [processing, setProcessing] = useState(false);
-  const [clientSecret, setClientSecret] = useState('');
-  const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
 
+  // Create Payment Intent
   useEffect(() => {
-    const createIntent = async () => {
-      try {
-        const price = parseFloat(classData?.price);
-        if (!price || isNaN(price)) {
-          setError('Invalid class price.');
-          return;
-        }
-
-        const res = await axiosSecure.post('/create-payment-intent', { price });
-        if (res.data?.clientSecret) {
+    if (classData?.price > 0) {
+      axiosSecure
+        .post('/create-payment-intent', { price: classData.price })
+        .then(res => {
           setClientSecret(res.data.clientSecret);
-        } else {
-          throw new Error('No clientSecret returned');
-        }
-      } catch (err) {
-        console.error('Error creating payment intent:', err);
-        setError('Failed to initiate payment. Please try again later.');
-      }
-    };
-
-    if (classData?.price) {
-      createIntent();
+        })
+        .catch(err => {
+          console.error('❌ Failed to create payment intent:', err);
+        });
     }
-  }, [classData, axiosSecure]);
+  }, [classData?.price, axiosSecure]);
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (!stripe || !elements || !clientSecret) return;
-
     setProcessing(true);
     setError('');
+
+    if (!stripe || !elements) {
+      setError('Stripe not properly initialized.');
+      setProcessing(false);
+      return;
+    }
 
     const card = elements.getElement(CardElement);
     if (!card) {
@@ -56,41 +47,58 @@ const CheckoutForm = ({ classData }) => {
       return;
     }
 
-    const { paymentIntent, error: paymentError } =
-      await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card,
-          billing_details: {
-            name: user?.displayName || 'Anonymous',
-            email: user?.email || 'unknown@edumanage.com',
-          },
-        },
+    const { error: methodError, paymentMethod } =
+      await stripe.createPaymentMethod({
+        type: 'card',
+        card,
       });
 
-    if (paymentError) {
-      setError(paymentError.message);
+    if (methodError) {
+      setError(methodError.message);
+      setProcessing(false);
+      return;
+    }
+
+    const { paymentIntent, error: confirmError } =
+      await stripe.confirmCardPayment(clientSecret, {
+        payment_method: paymentMethod.id,
+        receipt_email: user.email,
+      });
+
+    if (confirmError) {
+      setError(confirmError.message);
       setProcessing(false);
       return;
     }
 
     if (paymentIntent.status === 'succeeded') {
       const paymentData = {
-        classId: classData._id,
         email: user.email,
+        classId: classData._id, // sent as string, backend will convert to ObjectId
+        classTitle: classData.title,
+        teacherName: classData.teacherName,
+        image: classData.image,
+        price: classData.price,
+        enrolledAt: new Date(),
         transactionId: paymentIntent.id,
-        price: parseFloat(classData.price),
-        date: new Date(),
       };
 
-      console.log(paymentData);
-
       try {
-        await axiosSecure.post('/payments', paymentData);
-        toast.success('Payment successful! You are now enrolled.');
-        navigate('/dashboard/my-enrolled-classes');
+        const res = await axiosSecure.post('/payments', paymentData);
+
+        if (res.data?.success) {
+          Swal.fire(
+            '✅ Success!',
+            'Payment complete & class enrolled!',
+            'success'
+          );
+          navigate('/dashboard/my-enrolled-classes');
+        } else {
+          throw new Error('Saving to database failed');
+        }
       } catch (err) {
-        console.error('Payment saved, but enrollment failed:', err);
-        setError('Payment completed, but failed to save enrollment info.');
+        console.error('❌ Error saving payment:', err);
+        Swal.fire('Error', 'Payment succeeded but saving failed.', 'error');
       }
     }
 
@@ -98,28 +106,17 @@ const CheckoutForm = ({ classData }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <CardElement
-        options={{
-          style: {
-            base: {
-              fontSize: '16px',
-              color: '#32325d',
-              '::placeholder': { color: '#aab7c4' },
-            },
-            invalid: { color: '#fa755a' },
-          },
-        }}
-        className="p-4 border rounded"
-      />
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto mt-6">
+      <CardElement className="border p-3 rounded-md" />
+      {error && <p className="text-red-500">{error}</p>}
+
       <button
-        type="submit"
-        disabled={!stripe || processing || !clientSecret}
         className="btn btn-primary w-full"
+        type="submit"
+        disabled={!stripe || processing}
       >
-        {processing ? 'Processing...' : `Pay $${classData?.price || 0}`}
+        {processing ? 'Processing...' : `Pay $${classData.price}`}
       </button>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
     </form>
   );
 };

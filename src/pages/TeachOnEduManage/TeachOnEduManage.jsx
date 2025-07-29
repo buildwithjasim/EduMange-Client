@@ -20,18 +20,35 @@ const TeachOnEduManage = () => {
 
   const [teacherRequest, setTeacherRequest] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [isFetching, setIsFetching] = useState(true); //
+
+  if (loading) {
+    return <Spinner></Spinner>;
+  }
 
   useEffect(() => {
-    if (user?.email) {
-      axiosSecure
-        .get('/teacher/request', { params: { email: user.email } })
-        .then(res => {
-          setTeacherRequest(res.data || null);
-        })
-        .catch(() => setTeacherRequest(null));
+    const fetchUserData = async () => {
+      if (!user?.email) return;
 
-      setUserRole(user?.role || 'student');
-    }
+      try {
+        // 1. Fetch teacher request
+        const requestRes = await axiosSecure.get('/teacher/request', {
+          params: { email: user.email },
+        });
+        setTeacherRequest(requestRes.data || null);
+
+        // 2. Fetch user role
+        const roleRes = await axiosSecure.get(`/user/role?email=${user.email}`);
+        setUserRole(roleRes.data?.role || 'student');
+      } catch (err) {
+        console.error(err);
+        setUserRole('student');
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    fetchUserData();
   }, [user, axiosSecure]);
 
   const onSubmit = async data => {
@@ -74,21 +91,23 @@ const TeachOnEduManage = () => {
     }
   };
 
-  if (loading || !user) return <Spinner></Spinner>;
+  if (loading || isFetching || !user) return <Spinner />;
 
   if (userRole === 'teacher') {
     return (
-      <div className="p-5">
-        <h2 className="text-2xl font-bold">You are already a teacher.</h2>
+      <div className="p-5 text-center">
+        <h2 className="text-2xl font-bold text-green-600">
+          ✅ You are already a teacher.
+        </h2>
       </div>
     );
   }
 
   if (teacherRequest?.status === 'pending') {
     return (
-      <div className="p-5">
-        <h2 className="text-2xl font-bold">
-          Your teacher request is pending approval.
+      <div className="p-5 text-center">
+        <h2 className="text-2xl font-bold text-yellow-600">
+          ⏳ Your teacher request is pending approval.
         </h2>
         <p>Please wait for the admin to review your application.</p>
       </div>
@@ -97,26 +116,26 @@ const TeachOnEduManage = () => {
 
   if (teacherRequest?.status === 'rejected') {
     return (
-      <div className="p-5">
-        <h2 className="text-2xl font-bold">
-          Your teacher request was rejected.
+      <div className="p-5 text-center">
+        <h2 className="text-2xl font-bold text-red-600">
+          ❌ Your teacher request was rejected.
         </h2>
         <button className="btn btn-primary mt-4" onClick={handleResend}>
-          Request to Another
+          Resend Request
         </button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-lg mx-auto p-5 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-4 text-center">
-        Apply to Teach on EduManage
+    <div className="max-w-2xl mx-auto p-5 bg-white dark:bg-base-200 rounded shadow">
+      <h2 className="text-2xl font-bold mb-6 text-center text-primary">
+        📚 Apply to Teach on EduManage
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label>Name</label>
+          <label className="font-medium">Name</label>
           <input
             type="text"
             value={user?.displayName || 'Unknown'}
@@ -126,20 +145,20 @@ const TeachOnEduManage = () => {
         </div>
 
         <div className="flex flex-col items-start">
-          <label>Photo</label>
+          <label className="font-medium">Photo</label>
           {user?.photoURL ? (
             <img
-              src={user?.photoURL}
+              src={user.photoURL}
               alt="User"
-              className="w-24 h-24 rounded-full object-cover mt-1"
+              className="w-24 h-24 rounded-full object-cover mt-2"
             />
           ) : (
-            <p>No photo available</p>
+            <p className="text-sm text-gray-500">No photo available</p>
           )}
         </div>
 
         <div>
-          <label>Email</label>
+          <label className="font-medium">Email</label>
           <input
             type="email"
             value={user?.email || ''}
@@ -149,7 +168,7 @@ const TeachOnEduManage = () => {
         </div>
 
         <div>
-          <label>Experience</label>
+          <label className="font-medium">Experience</label>
           <select
             {...register('experience', { required: true })}
             className="select select-bordered w-full"
@@ -162,7 +181,7 @@ const TeachOnEduManage = () => {
         </div>
 
         <div>
-          <label>Title</label>
+          <label className="font-medium">Title</label>
           <input
             type="text"
             {...register('title', { required: true })}
@@ -172,7 +191,7 @@ const TeachOnEduManage = () => {
         </div>
 
         <div>
-          <label>Category</label>
+          <label className="font-medium">Category</label>
           <select
             {...register('category', { required: true })}
             className="select select-bordered w-full"

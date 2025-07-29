@@ -1,80 +1,49 @@
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState, useContext } from 'react';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
-import Swal from 'sweetalert2';
-import AuthContext from '../../contexts/AuthContext';
+import Spinner from '../../components/Spinner/Spinner';
 
 const ClassDetails = () => {
   const { id } = useParams();
-  const axiosSecure = useAxiosSecure();
-  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-
+  const axiosSecure = useAxiosSecure();
   const [classData, setClassData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axiosSecure
-      .get(`/classes/${id}`)
-      .then(res => setClassData(res.data))
-      .catch(() => Swal.fire('Error', 'Class not found', 'error'));
+    axiosSecure.get(`/classes/${id}`).then(res => {
+      setClassData(res.data);
+      setLoading(false);
+    });
   }, [id, axiosSecure]);
 
-  const handlePay = () => {
-    if (!user)
-      return Swal.fire('Login Required', 'Please login first.', 'info');
-
-    navigate(`/payment/${id}`);
-  };
-
-  if (!classData) return <div className="p-10 text-center">Loading...</div>;
-
-  const {
-    title,
-    image,
-    teacherName,
-    teacherEmail,
-    price,
-    description,
-    enrolled = 0,
-  } = classData;
+  if (loading) return <Spinner />;
+  if (!classData) return <p className="text-center mt-10">Class not found</p>;
 
   return (
-    <div className="p-10 max-w-5xl mx-auto">
-      <h2 className="text-3xl font-bold mb-4">{title}</h2>
+    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
       <img
-        src={image}
-        alt={title}
-        className="w-full h-96 object-cover rounded-lg mb-6"
+        src={classData.image}
+        alt="Class"
+        className="rounded w-full h-64 object-cover mb-4"
       />
+      <h2 className="text-3xl font-bold mb-2">{classData.title}</h2>
+      <p>
+        <strong>Teacher:</strong> {classData.teacherName}
+      </p>
+      <p>
+        <strong>Description:</strong> {classData.description}
+      </p>
+      <p className="font-semibold mt-2 text-indigo-600">
+        Price: ${classData.price}
+      </p>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div>
-          <p>
-            <strong>Teacher Name:</strong> {teacherName}
-          </p>
-          <p>
-            <strong>Teacher Email:</strong> {teacherEmail}
-          </p>
-          <p>
-            <strong>Total Enrolled:</strong> {enrolled}
-          </p>
-        </div>
-        <div>
-          <p>
-            <strong>Price:</strong> ${price}
-          </p>
-          <p>
-            <strong>Description:</strong>
-          </p>
-          <p>{description}</p>
-        </div>
-      </div>
-
-      <div className="mt-6 text-right">
-        <button className="btn btn-primary" onClick={handlePay}>
-          Pay & Enroll
-        </button>
-      </div>
+      <button
+        className="btn btn-primary mt-5"
+        onClick={() => navigate(`/payment/${id}`)}
+      >
+        Pay
+      </button>
     </div>
   );
 };

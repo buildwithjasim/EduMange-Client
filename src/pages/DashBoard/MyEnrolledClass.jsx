@@ -8,11 +8,17 @@ const MyEnrolledClass = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useContext(AuthContext);
 
-  const { data: enrolled = [], isLoading } = useQuery({
+  const {
+    data: enrolled = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ['enrollments', user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
       const res = await axiosSecure.get(`/enrollments?email=${user.email}`);
+
       return res.data;
     },
   });
@@ -21,6 +27,15 @@ const MyEnrolledClass = () => {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <span className="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center text-red-500 mt-10">
+        <p>Failed to load your enrolled classes. Please try again later.</p>
+        <p className="text-sm">{error?.message}</p>
       </div>
     );
   }
@@ -48,16 +63,23 @@ const MyEnrolledClass = () => {
               <figure className="h-44 overflow-hidden">
                 <img
                   src={cls.image}
-                  alt={cls.title}
+                  alt={cls.classTitle}
                   className="w-full h-full object-cover"
                 />
               </figure>
               <div className="card-body">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-                  {cls.title}
+                  {cls.classTitle}
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   👨‍🏫 Instructor: {cls.teacherName}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  💵 Price: ${cls.price}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  📅 Enrolled on:{' '}
+                  {new Date(cls.enrolledAt).toLocaleDateString()}
                 </p>
                 <Link
                   to={`/dashboard/my-enroll-class/${cls.classId}`}

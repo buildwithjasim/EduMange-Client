@@ -1,14 +1,27 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { FaSignInAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import AuthContext from '../../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { saveUserInDb } from '../../../api/utils';
+import useToken from '../../../hooks/useToken';
 
 const Login = () => {
   const { loginUser, signInWithGoogle } = useContext(AuthContext);
+  const [loginUserEmail, setLoginUserEmail] = useState(null);
   const navigate = useNavigate();
+
+  // Custom hook to fetch and store token
+  const { token } = useToken(loginUserEmail);
+
+  // When token is available, navigate
+  useEffect(() => {
+    if (token) {
+      Swal.fire('Success!', 'Logged in successfully!', 'success');
+      navigate('/');
+    }
+  }, [token, navigate]);
 
   const {
     register,
@@ -24,13 +37,8 @@ const Login = () => {
         email: result?.user?.email,
         image: result?.user?.photoURL,
       };
-      // update user
       saveUserInDb(userData);
-
-      console.log(userData);
-
-      Swal.fire('Success!', 'Logged in successfully!', 'success');
-      navigate('/');
+      setLoginUserEmail(userData.email); // Trigger useToken
     } catch (error) {
       Swal.fire('Error', error.message, 'error');
     }
@@ -39,15 +47,13 @@ const Login = () => {
   const handleGoogle = async () => {
     try {
       const result = await signInWithGoogle();
-
       const userData = {
         name: result?.user?.displayName,
         email: result?.user?.email,
         image: result?.user?.photoURL,
       };
       saveUserInDb(userData);
-      Swal.fire('Success!', 'Signed in with Google', 'success');
-      navigate('/');
+      setLoginUserEmail(userData.email); // Trigger useToken
     } catch (error) {
       Swal.fire('Error', error.message, 'error');
     }
