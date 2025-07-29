@@ -60,6 +60,8 @@ const MyEnrollClassDetails = () => {
         description: feedback,
         rating,
         studentEmail: user.email,
+        studentName: user.displayName,
+        studentImage: user.photoURL, // ✅ added user image here
         createdAt: new Date(),
       });
 
