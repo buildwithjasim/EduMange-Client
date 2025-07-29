@@ -1,11 +1,9 @@
-import { Carousel } from 'react-responsive-carousel';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { useQuery } from '@tanstack/react-query';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import Spinner from '../../../components/Spinner/Spinner';
 import { motion } from 'framer-motion';
 
-const FeedbackCarousel = () => {
+const FeedbackCards = () => {
   const axiosSecure = useAxiosSecure();
 
   const { data: feedbacks = [], isLoading } = useQuery({
@@ -19,46 +17,36 @@ const FeedbackCarousel = () => {
   if (isLoading) return <Spinner />;
 
   return (
-    <section className="max-w-5xl mx-auto px-4 py-12">
+    <section className="max-w-7xl mx-auto px-4 py-12">
       <h2 className="text-4xl font-bold text-center mb-10 text-primary">
         ❤️ What Our Students Say
       </h2>
 
-      <Carousel
-        showThumbs={false}
-        showStatus={false}
-        infiniteLoop
-        autoPlay
-        interval={6000}
-        transitionTime={800}
-        emulateTouch
-        swipeable
-        showIndicators
-        className="rounded-xl overflow-hidden"
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {feedbacks.map((fb, idx) => (
           <motion.div
             key={idx}
-            className="bg-white dark:bg-gray-800 shadow-xl p-6 sm:p-10 rounded-xl max-w-3xl mx-auto text-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            className="bg-white dark:bg-gray-900 shadow-xl rounded-2xl p-6 border hover:border-primary transition duration-300"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: idx * 0.1 }}
           >
-            <p className="text-lg text-gray-700 dark:text-gray-200 italic mb-6">
+            <p className="text-gray-700 dark:text-gray-300 italic mb-4">
               “{fb.description}”
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex items-center gap-4 mt-6">
               <img
                 src={
                   fb.studentImage ||
                   'https://i.ibb.co/4gM3vTQ/default-avatar.png'
                 }
                 alt={fb.studentEmail}
-                className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+                className="w-14 h-14 rounded-full object-cover border-2 border-primary"
               />
-              <div className="text-center sm:text-left">
-                <p className="text-lg font-semibold text-gray-800 dark:text-white">
+              <div>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
                   {fb.studentName || fb.studentEmail}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -68,9 +56,9 @@ const FeedbackCarousel = () => {
             </div>
           </motion.div>
         ))}
-      </Carousel>
+      </div>
     </section>
   );
 };
 
-export default FeedbackCarousel;
+export default FeedbackCards;

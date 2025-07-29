@@ -1,27 +1,14 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext } from 'react';
 import { FaSignInAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import AuthContext from '../../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { saveUserInDb } from '../../../api/utils';
-import useToken from '../../../hooks/useToken';
 
 const Login = () => {
   const { loginUser, signInWithGoogle } = useContext(AuthContext);
-  const [loginUserEmail, setLoginUserEmail] = useState(null);
   const navigate = useNavigate();
-
-  // Custom hook to fetch and store token
-  const { token } = useToken(loginUserEmail);
-
-  // When token is available, navigate
-  useEffect(() => {
-    if (token) {
-      Swal.fire('Success!', 'Logged in successfully!', 'success');
-      navigate('/');
-    }
-  }, [token, navigate]);
 
   const {
     register,
@@ -37,8 +24,10 @@ const Login = () => {
         email: result?.user?.email,
         image: result?.user?.photoURL,
       };
-      saveUserInDb(userData);
-      setLoginUserEmail(userData.email); // Trigger useToken
+      await saveUserInDb(userData);
+      Swal.fire('Success!', 'Logged in successfully!', 'success');
+      // Wait briefly to ensure token is set by AuthProvider
+      setTimeout(() => navigate('/'), 300);
     } catch (error) {
       Swal.fire('Error', error.message, 'error');
     }
@@ -52,8 +41,9 @@ const Login = () => {
         email: result?.user?.email,
         image: result?.user?.photoURL,
       };
-      saveUserInDb(userData);
-      setLoginUserEmail(userData.email); // Trigger useToken
+      await saveUserInDb(userData);
+      Swal.fire('Success!', 'Logged in with Google!', 'success');
+      setTimeout(() => navigate('/'), 300);
     } catch (error) {
       Swal.fire('Error', error.message, 'error');
     }

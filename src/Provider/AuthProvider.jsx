@@ -52,14 +52,14 @@ const AuthProvider = ({ children }) => {
       setUser(currentUser);
       setLoading(false);
 
-      // if (currentUser) {
-      //   const { data } = await axios.post('http://localhost:5000/jwt', {
-      //     email: currentUser.email,
-      //   });
-      //   localStorage.setItem('token', data.token);
-      // } else {
-      //   localStorage.removeItem('token');
-      // }
+      if (currentUser) {
+        const { data } = await axios.post('http://localhost:5000/jwt', {
+          email: currentUser.email,
+        });
+        localStorage.setItem('token', data.token);
+      } else {
+        localStorage.removeItem('token');
+      }
     });
 
     return () => unsubscribe();

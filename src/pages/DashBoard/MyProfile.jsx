@@ -19,8 +19,6 @@ const MyProfile = () => {
     },
   });
 
-  console.log(userInfo);
-
   if (isLoading || !user) {
     return <Spinner></Spinner>;
   }

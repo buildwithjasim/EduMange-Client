@@ -18,7 +18,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        {/* ✅ Wrap with Stripe Elements */}
         <Elements stripe={stripePromise}>
           <RouterProvider router={router} />
         </Elements>
