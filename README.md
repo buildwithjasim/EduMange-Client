@@ -1,5 +1,14 @@
 
 # 🎓 EduManage — Education Management Platform
+---
+
+## 📸 Screenshot
+
+
+
+![DreamStay Screenshot](https://i.ibb.co.com/j9krWkd8/Screenshot-8-Copy.jpg)
+
+---
 
 **🔗 Live Demo:** [https://edumanagesystem-4e3fe.web.app](https://edumanagesystem-4e3fe.web.app)  
 **🔧 Role:** Full-Stack Developer (MERN Stack)  
