@@ -12,12 +12,12 @@ export default function Home() {
   return (
     <div>
       <Banner></Banner>
-      <PartnershipMarquee></PartnershipMarquee>
-      <FeedbackCarousel></FeedbackCarousel>
+      <BestInstructors></BestInstructors>
       <StatsSection></StatsSection>
+      <FeedbackCarousel></FeedbackCarousel>
+      <PartnershipMarquee></PartnershipMarquee>
       <BecomeInstructor></BecomeInstructor>
       <WhyChoseUse></WhyChoseUse>
-      <BestInstructors></BestInstructors>
     </div>
   );
 }

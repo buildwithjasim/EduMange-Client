@@ -1,2 +1,20 @@
 @import 'tailwindcss';
 @plugin "daisyui";
+
+@layer base {
+  :root {
+    --text: #110418;
+    --background: #f9f2fd;
+    --primary: #a138db;
+    --secondary: #e882e5;
+    --accent: #e057c6;
+  }
+
+  .dark {
+    --text: #f5e9fb;
+    --background: #09020d;
+    --primary: #8e24c6;
+    --secondary: #7d177a;
+    --accent: #a81f8f;
+  }
+}
