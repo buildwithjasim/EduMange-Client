@@ -19,6 +19,8 @@ import MyEnrolledClass from '../pages/DashBoard/MyEnrolledClass';
 import MyEnrollClassDetails from '../pages/MyEnrollClassDetails/MyEnrollClassDetails';
 import MyProfile from '../pages/DashBoard/MyProfile.jsx';
 import PrivateRoute from '../routes/PrivateRoute.jsx';
+import About from '../pages/aboutUs/aboutUs.jsx';
+import ContactUs from '../pages/contactUs/contactUs.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -48,9 +50,14 @@ export const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
+
+  {
+    path: 'aboutUs',
+    element: <About />,
+  },
   {
     path: 'contactUs',
-    element: <contactUs />,
+    element: <ContactUs />,
   },
 
   {
