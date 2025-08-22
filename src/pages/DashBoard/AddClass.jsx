@@ -32,7 +32,7 @@ const AddClass = () => {
           icon: 'success',
           title: '✅ Class Added!',
           text: 'Your class has been submitted for admin review.',
-          confirmButtonColor: '#2563eb',
+          confirmButtonColor: '#2563eb', // primary color
         });
 
         reset();
@@ -45,56 +45,56 @@ const AddClass = () => {
         text:
           err.response?.data?.error ||
           'Something went wrong. Please try again.',
-        confirmButtonColor: '#d33',
+        confirmButtonColor: '#d33', // red for error
       });
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-8">
-      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-        ➕ Submit a New Class
+    <div className="max-w-3xl mx-auto p-8 bg-background dark:bg-gray-900 rounded-2xl shadow-lg mt-8">
+      <h2 className="text-3xl font-bold text-primary mb-6 text-center">
+        Submit a New Class
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+          <label className="block mb-1 font-semibold text-text dark:text-text/80">
             Class Title
           </label>
           <input
             {...register('title')}
             required
             placeholder="e.g. Advanced JavaScript"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full border-primary focus:border-accent focus:ring-accent"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+            <label className="block mb-1 font-semibold text-text dark:text-text/80">
               Your Name
             </label>
             <input
               value={user.displayName}
               readOnly
-              className="input input-bordered w-full bg-gray-100 dark:bg-gray-700"
+              className="input input-bordered w-full bg-primary/10 dark:bg-primary/20 text-primary"
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+            <label className="block mb-1 font-semibold text-text dark:text-text/80">
               Email
             </label>
             <input
               value={user.email}
               readOnly
-              className="input input-bordered w-full bg-gray-100 dark:bg-gray-700"
+              className="input input-bordered w-full bg-primary/10 dark:bg-primary/20 text-primary"
             />
           </div>
         </div>
 
         <div>
-          <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+          <label className="block mb-1 font-semibold text-text dark:text-text/80">
             Price (USD)
           </label>
           <input
@@ -103,37 +103,37 @@ const AddClass = () => {
             required
             placeholder="e.g. 29.99"
             step="0.01"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full border-primary focus:border-accent focus:ring-accent"
           />
         </div>
 
         <div>
-          <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+          <label className="block mb-1 font-semibold text-text dark:text-text/80">
             Description
           </label>
           <textarea
             {...register('description')}
             required
             placeholder="Brief description about the course"
-            className="textarea textarea-bordered w-full min-h-[100px]"
+            className="textarea textarea-bordered w-full min-h-[100px] border-primary focus:border-accent focus:ring-accent"
           />
         </div>
 
         <div>
-          <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-200">
+          <label className="block mb-1 font-semibold text-text dark:text-text/80">
             Image URL
           </label>
           <input
             {...register('image')}
             required
             placeholder="Paste image URL here"
-            className="input input-bordered w-full"
+            className="input input-bordered w-full border-primary focus:border-accent focus:ring-accent"
           />
         </div>
 
         <button
           type="submit"
-          className="btn btn-primary w-full text-white text-lg tracking-wide"
+          className="btn btn-primary w-full text-white text-lg tracking-wide shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
         >
           Submit Class for Review
         </button>

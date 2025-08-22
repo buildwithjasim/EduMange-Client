@@ -31,21 +31,20 @@ const Users = () => {
   const handleMakeAdmin = async id => {
     try {
       await axiosSecure.patch(`/users/admin/${id}`);
-      toast.success('User promoted to Admin!');
-      // ✅ Update only the affected user
+      toast.success('✅ User promoted to Admin!');
       setUsers(prev =>
         prev.map(user => (user._id === id ? { ...user, role: 'admin' } : user))
       );
     } catch (error) {
-      toast.error('Failed to promote user');
+      toast.error('❌ Failed to promote user');
     }
   };
 
   const totalPages = Math.ceil(count / limit);
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">👥 All Users</h2>
+    <div className="p-6 max-w-7xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-primary">👥 All Users</h2>
 
       {/* 🔍 Search */}
       <input
@@ -60,9 +59,9 @@ const Users = () => {
       />
 
       {/* 📋 Users Table */}
-      <div className="overflow-x-auto rounded-lg">
-        <table className="table table-zebra w-full text-sm">
-          <thead className="bg-base-200">
+      <div className="overflow-x-auto rounded-2xl shadow-lg">
+        <table className="table w-full text-sm bg-background">
+          <thead className="bg-primary/20 text-primary uppercase text-xs">
             <tr>
               <th>#</th>
               <th>User Image</th>
@@ -74,7 +73,10 @@ const Users = () => {
           <tbody>
             {users.length > 0 ? (
               users.map((user, index) => (
-                <tr key={user._id}>
+                <tr
+                  key={user._id}
+                  className="border-b hover:bg-primary/10 transition-colors"
+                >
                   <td>{(page - 1) * limit + index + 1}</td>
                   <td>
                     <img
@@ -83,14 +85,18 @@ const Users = () => {
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   </td>
-                  <td>{user?.name || 'Unknown'}</td>
+                  <td className="text-primary font-medium">
+                    {user?.name || 'Unknown'}
+                  </td>
                   <td>{user?.email}</td>
                   <td>
                     <button
                       onClick={() => handleMakeAdmin(user._id)}
                       disabled={user?.role === 'admin'}
                       className={`btn btn-sm ${
-                        user.role === 'admin' ? 'btn-success' : 'btn-primary'
+                        user.role === 'admin'
+                          ? 'btn-accent text-white'
+                          : 'btn-primary text-white'
                       }`}
                     >
                       {user?.role === 'admin' ? 'Admin' : 'Make Admin'}
@@ -100,7 +106,7 @@ const Users = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center text-gray-500 py-4">
+                <td colSpan="5" className="text-center text-text/60 py-4">
                   No users found.
                 </td>
               </tr>
@@ -116,7 +122,9 @@ const Users = () => {
             key={i}
             onClick={() => setPage(i + 1)}
             className={`btn btn-sm ${
-              i + 1 === page ? 'btn-accent' : 'btn-outline'
+              i + 1 === page
+                ? 'btn-accent text-white'
+                : 'btn-outline text-primary'
             }`}
           >
             {i + 1}

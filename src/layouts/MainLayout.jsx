@@ -5,9 +5,9 @@ import Footer from '../pages/Home/Footer/Footer';
 
 export default function MainLayout() {
   return (
-    <div className="min-h-screen bg-background text-text transition-colors duration-300">
+    <div className="min-h-screen">
       <Navbar />
-      <main className="flex-1">
+      <main>
         <Outlet />
       </main>
       <Footer />

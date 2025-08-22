@@ -39,6 +39,7 @@ export const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
+
   {
     path: 'allClasses',
     element: (
@@ -47,6 +48,11 @@ export const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
+  {
+    path: 'contactUs',
+    element: <contactUs />,
+  },
+
   {
     path: '/class/:id',
     element: <ClassDetails />,

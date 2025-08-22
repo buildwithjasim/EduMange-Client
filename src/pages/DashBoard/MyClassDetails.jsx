@@ -4,7 +4,7 @@ import useAxiosSecure from '../../hooks/useAxiosSecure';
 import Swal from 'sweetalert2';
 
 const MyClassDetails = () => {
-  const { id } = useParams(); // class ID
+  const { id } = useParams();
   const axiosSecure = useAxiosSecure();
 
   const [classInfo, setClassInfo] = useState(null);
@@ -19,7 +19,6 @@ const MyClassDetails = () => {
     description: '',
   });
 
-  // Fetch class info, assignments, and submissions count
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -45,19 +44,13 @@ const MyClassDetails = () => {
     fetchData();
   }, [id, axiosSecure]);
 
-  // Handle form input changes
   const handleInputChange = e => {
     const { name, value } = e.target;
-    setNewAssignment(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    setNewAssignment(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handle new assignment submission
   const handleAddAssignment = async e => {
     e.preventDefault();
-
     const { title, deadline, description } = newAssignment;
 
     if (!title || !deadline || !description) {
@@ -73,12 +66,8 @@ const MyClassDetails = () => {
       });
 
       Swal.fire('Success', 'Assignment created', 'success');
-
-      // Clear form
       setNewAssignment({ title: '', deadline: '', description: '' });
       setShowAssignmentModal(false);
-
-      // Update assignment list and count
       setAssignments(prev => [...prev, { title, deadline, description }]);
     } catch (error) {
       console.error(error);
@@ -88,7 +77,7 @@ const MyClassDetails = () => {
 
   if (loading) {
     return (
-      <p className="text-center mt-10 text-lg font-semibold">
+      <p className="text-center mt-10 text-lg font-semibold text-text/70">
         Loading class details...
       </p>
     );
@@ -96,29 +85,31 @@ const MyClassDetails = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8 text-center">
+      <h1 className="text-3xl font-bold mb-8 text-center text-primary">
         {classInfo?.title}
       </h1>
 
       {/* Class Progress Section */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div className="bg-green-100 p-6 rounded-lg shadow text-center">
-          <h3 className="text-xl font-semibold mb-2">Total Enrollments</h3>
-          <p className="text-4xl font-bold text-green-800">
+        <div className="bg-primary/10 p-6 rounded-2xl shadow text-center">
+          <h3 className="text-xl font-semibold mb-2 text-primary">
+            Total Enrollments
+          </h3>
+          <p className="text-4xl font-bold text-primary">
             {classInfo?.enrolled || 0}
           </p>
         </div>
-        <div className="bg-blue-100 p-6 rounded-lg shadow text-center">
-          <h3 className="text-xl font-semibold mb-2">Total Assignments</h3>
-          <p className="text-4xl font-bold text-blue-800">
-            {assignments.length}
-          </p>
+        <div className="bg-accent/10 p-6 rounded-2xl shadow text-center">
+          <h3 className="text-xl font-semibold mb-2 text-accent">
+            Total Assignments
+          </h3>
+          <p className="text-4xl font-bold text-accent">{assignments.length}</p>
         </div>
-        <div className="bg-purple-100 p-6 rounded-lg shadow text-center">
-          <h3 className="text-xl font-semibold mb-2">
+        <div className="bg-secondary/10 p-6 rounded-2xl shadow text-center">
+          <h3 className="text-xl font-semibold mb-2 text-secondary">
             Total Assignment Submissions
           </h3>
-          <p className="text-4xl font-bold text-purple-800">
+          <p className="text-4xl font-bold text-secondary">
             {totalSubmissions}
           </p>
         </div>
@@ -127,27 +118,34 @@ const MyClassDetails = () => {
       {/* Assignment Section */}
       <section>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">Class Assignments</h2>
+          <h2 className="text-2xl font-semibold text-primary">
+            Class Assignments
+          </h2>
           <button
             onClick={() => setShowAssignmentModal(true)}
-            className="btn btn-accent"
+            className="btn btn-accent text-white"
           >
             Create Assignment
           </button>
         </div>
 
         {assignments.length === 0 ? (
-          <p className="text-gray-500">No assignments created yet.</p>
+          <p className="text-text/70">No assignments created yet.</p>
         ) : (
           <ul className="space-y-4">
             {assignments.map((a, idx) => (
-              <li key={idx} className="bg-base-200 p-4 rounded shadow">
-                <h3 className="text-lg font-semibold">{a.title}</h3>
-                <p>
+              <li
+                key={idx}
+                className="bg-background dark:bg-gray-900 p-4 rounded-2xl shadow"
+              >
+                <h3 className="text-lg font-semibold text-primary">
+                  {a.title}
+                </h3>
+                <p className="text-text/80">
                   <strong>Deadline:</strong>{' '}
                   {new Date(a.deadline).toLocaleDateString()}
                 </p>
-                <p>{a.description}</p>
+                <p className="text-text/70">{a.description}</p>
               </li>
             ))}
           </ul>
@@ -157,11 +155,13 @@ const MyClassDetails = () => {
       {/* Modal */}
       {showAssignmentModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg">
-            <h3 className="text-xl font-bold mb-4">Create Assignment</h3>
+          <div className="bg-background dark:bg-gray-900 rounded-2xl p-6 w-11/12 max-w-lg shadow-lg">
+            <h3 className="text-xl font-bold mb-4 text-primary">
+              Create Assignment
+            </h3>
             <form onSubmit={handleAddAssignment} className="space-y-4">
               <div>
-                <label className="block font-medium mb-1">
+                <label className="block font-medium mb-1 text-text/80">
                   Assignment Title
                 </label>
                 <input
@@ -169,30 +169,34 @@ const MyClassDetails = () => {
                   name="title"
                   value={newAssignment.title}
                   onChange={handleInputChange}
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full border-primary focus:border-accent focus:ring-accent"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-medium mb-1">Deadline</label>
+                <label className="block font-medium mb-1 text-text/80">
+                  Deadline
+                </label>
                 <input
                   type="date"
                   name="deadline"
                   value={newAssignment.deadline}
                   onChange={handleInputChange}
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full border-primary focus:border-accent focus:ring-accent"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-medium mb-1">Description</label>
+                <label className="block font-medium mb-1 text-text/80">
+                  Description
+                </label>
                 <textarea
                   name="description"
                   value={newAssignment.description}
                   onChange={handleInputChange}
-                  className="textarea textarea-bordered w-full"
+                  className="textarea textarea-bordered w-full border-primary focus:border-accent focus:ring-accent"
                   required
                 />
               </div>
@@ -200,12 +204,12 @@ const MyClassDetails = () => {
               <div className="flex justify-end gap-3">
                 <button
                   type="button"
-                  className="btn btn-outline"
+                  className="btn btn-outline border-accent text-accent hover:bg-accent/10"
                   onClick={() => setShowAssignmentModal(false)}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-primary text-white">
                   Add Assignment
                 </button>
               </div>

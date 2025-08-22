@@ -7,7 +7,6 @@ const TeacherRequests = () => {
   const queryClient = useQueryClient();
   const axiosSecure = useAxiosSecure();
 
-  // 🔍 Fetch all teacher requests
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ['teacherRequests'],
     queryFn: async () => {
@@ -16,38 +15,38 @@ const TeacherRequests = () => {
     },
   });
 
-  // ✅ Approve request
   const approveMutation = useMutation({
     mutationFn: async id => {
       await axiosSecure.patch(`/admin/teacher-requests/approve/${id}`);
     },
     onSuccess: () => {
-      toast.success('Approved successfully');
+      toast.success('✅ Approved successfully');
       queryClient.invalidateQueries(['teacherRequests']);
     },
-    onError: () => toast.error('Approval failed'),
+    onError: () => toast.error('❌ Approval failed'),
   });
 
-  // ❌ Reject request
   const rejectMutation = useMutation({
     mutationFn: async id => {
       await axiosSecure.patch(`/admin/teacher-requests/reject/${id}`);
     },
     onSuccess: () => {
-      toast.success('Rejected successfully');
+      toast.success('✅ Rejected successfully');
       queryClient.invalidateQueries(['teacherRequests']);
     },
-    onError: () => toast.error('Rejection failed'),
+    onError: () => toast.error('❌ Rejection failed'),
   });
 
   if (isLoading) return <Spinner />;
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">📋 Teacher Requests</h2>
-      <div className="overflow-x-auto rounded-xl">
-        <table className="table w-full text-sm">
-          <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+    <div className="p-6 max-w-7xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-primary">
+        📋 Teacher Requests
+      </h2>
+      <div className="overflow-x-auto rounded-2xl shadow-lg">
+        <table className="table w-full text-sm bg-background">
+          <thead className="bg-primary/20 text-primary uppercase text-xs">
             <tr>
               <th>#</th>
               <th>Photo</th>
@@ -60,12 +59,23 @@ const TeacherRequests = () => {
             </tr>
           </thead>
           <tbody>
+            {requests.length === 0 && (
+              <tr>
+                <td colSpan="8" className="text-center text-text/60 py-6">
+                  No teacher requests found.
+                </td>
+              </tr>
+            )}
+
             {requests.map((request, index) => {
               const isFinal =
                 request.status === 'accepted' || request.status === 'rejected';
 
               return (
-                <tr key={request._id} className="border-b hover:bg-gray-50">
+                <tr
+                  key={request._id}
+                  className="border-b hover:bg-primary/10 transition-colors"
+                >
                   <td>{index + 1}</td>
                   <td>
                     <img
@@ -74,7 +84,7 @@ const TeacherRequests = () => {
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   </td>
-                  <td>{request.name}</td>
+                  <td className="text-primary font-medium">{request.name}</td>
                   <td>{request.experience}</td>
                   <td>{request.title}</td>
                   <td>{request.category}</td>
@@ -82,7 +92,7 @@ const TeacherRequests = () => {
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         request.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-700'
+                          ? 'bg-accent/20 text-accent'
                           : request.status === 'accepted'
                           ? 'bg-green-100 text-green-700'
                           : 'bg-red-100 text-red-700'
@@ -93,14 +103,14 @@ const TeacherRequests = () => {
                   </td>
                   <td className="flex gap-2 justify-center">
                     <button
-                      className="btn btn-success btn-sm"
+                      className="btn btn-accent btn-sm text-white"
                       disabled={isFinal || approveMutation.isPending}
                       onClick={() => approveMutation.mutate(request._id)}
                     >
                       Approve
                     </button>
                     <button
-                      className="btn btn-error btn-sm"
+                      className="btn btn-error btn-sm text-white"
                       disabled={isFinal || rejectMutation.isPending}
                       onClick={() => rejectMutation.mutate(request._id)}
                     >
@@ -110,13 +120,6 @@ const TeacherRequests = () => {
                 </tr>
               );
             })}
-            {requests.length === 0 && (
-              <tr>
-                <td colSpan="8" className="text-center text-gray-500 py-6">
-                  No teacher requests found.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>

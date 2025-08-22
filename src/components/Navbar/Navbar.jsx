@@ -48,7 +48,7 @@ const Navbar = () => {
         to="/"
         className={({ isActive }) =>
           `btn btn-ghost text-text hover:text-primary ${
-            isActive ? 'bg-white text-primary font-semibold' : ''
+            isActive ? 'text-primary font-semibold' : ''
           }`
         }
       >
@@ -74,11 +74,31 @@ const Navbar = () => {
       >
         Teach on EduManage
       </NavLink>
+      <NavLink
+        to="/aboutUs"
+        className={({ isActive }) =>
+          `btn btn-ghost text-text hover:text-primary ${
+            isActive ? 'text-primary font-semibold' : ''
+          }`
+        }
+      >
+        About Us
+      </NavLink>
+      <NavLink
+        to="/contactUs"
+        className={({ isActive }) =>
+          `btn btn-ghost text-text hover:text-primary ${
+            isActive ? 'text-primary font-semibold' : ''
+          }`
+        }
+      >
+        Contact Us
+      </NavLink>
     </>
   );
 
   return (
-    <header className="bg-primary dark:bg-background shadow-md transition-colors duration-300 sticky top-0 z-50">
+    <header className="bg-accent/25 shadow-md transition-colors duration-300 sticky top-0 z-50">
       <div className="navbar w-full max-w-7xl mx-auto px-4 flex justify-between items-center">
         {/* Logo & Mobile Menu */}
         <div className="flex items-center gap-3">
@@ -86,7 +106,7 @@ const Navbar = () => {
             <label tabIndex={0} className="btn btn-ghost">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-text"
+                className="h-6 w-6 text-primary"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -101,7 +121,7 @@ const Navbar = () => {
             </label>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-background dark:bg-background text-text rounded-box mt-3 w-52 p-2 shadow"
+              className="menu menu-sm dropdown-content bg-background text-text rounded-box mt-3 w-52 p-2 shadow"
             >
               {navItems}
             </ul>
@@ -111,9 +131,7 @@ const Navbar = () => {
             alt="EduManage Logo"
             className="h-10 w-10 rounded-full"
           />
-          <span className="text-xl font-bold text-text dark:text-text">
-            EduManage
-          </span>
+          <span className="text-xl font-bold text-primary">EduManage</span>
         </div>
 
         {/* Desktop Navigation */}
@@ -124,7 +142,7 @@ const Navbar = () => {
           {!user ? (
             <Link
               to="/login"
-              className="btn btn-outline btn-sm border-primary text-black  hover:text-primary transition-colors duration-300"
+              className="btn btn-primary px-2 py-1  text-white text-sm font-semibold shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
             >
               Sign In
             </Link>
@@ -139,7 +157,7 @@ const Navbar = () => {
                   />
                 </div>
               </label>
-              <ul className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-background dark:bg-background text-text rounded-box w-52">
+              <ul className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-background text-text rounded-box w-52">
                 <li>
                   <span className="font-semibold">{user.displayName}</span>
                 </li>

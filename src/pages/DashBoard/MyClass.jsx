@@ -13,10 +13,9 @@ const MyClass = () => {
 
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedClass, setSelectedClass] = useState(null); // for update modal
+  const [selectedClass, setSelectedClass] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
 
-  // Fetch teacher classes on mount
   useEffect(() => {
     if (!user?.email) return;
     setLoading(true);
@@ -32,7 +31,6 @@ const MyClass = () => {
       });
   }, [user, axiosSecure]);
 
-  // Delete confirmation + delete action
   const handleDelete = classId => {
     Swal.fire({
       title: 'Are you sure?',
@@ -40,6 +38,8 @@ const MyClass = () => {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, delete it!',
+      confirmButtonColor: '#2563eb', // primary
+      cancelButtonColor: '#d33', // error
     }).then(async result => {
       if (result.isConfirmed) {
         try {
@@ -54,19 +54,16 @@ const MyClass = () => {
     });
   };
 
-  // Open update modal
   const openUpdateModal = classData => {
     setSelectedClass(classData);
     setShowUpdateModal(true);
   };
 
-  // Handle update submit
   const handleUpdateSubmit = async e => {
     e.preventDefault();
     if (!selectedClass) return;
     try {
       const { _id, price, description, title, image } = selectedClass;
-      // Only send fields that can be updated
       await axiosSecure.patch(`/teacher/classes/${_id}`, {
         price: parseFloat(price),
         description,
@@ -76,7 +73,6 @@ const MyClass = () => {
 
       Swal.fire('Success', 'Class updated successfully', 'success');
       setShowUpdateModal(false);
-      // Refresh the list with updated data
       setClasses(prev =>
         prev.map(c =>
           c._id === _id ? { ...c, price, description, title, image } : c
@@ -88,36 +84,40 @@ const MyClass = () => {
     }
   };
 
-  if (loading) return <Spinner></Spinner>;
+  if (loading) return <Spinner />;
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">My Classes</h1>
+      <h1 className="text-3xl font-bold text-primary mb-6">My Classes</h1>
 
       {classes.length === 0 && (
-        <p className="text-center">You have not added any classes yet.</p>
+        <p className="text-center text-text/70">
+          You have not added any classes yet.
+        </p>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {classes.map(cls => (
           <div
             key={cls._id}
-            className="border rounded shadow p-4 flex flex-col justify-between"
+            className="border rounded-2xl shadow-md p-4 flex flex-col justify-between bg-background dark:bg-gray-900"
           >
             <div>
-              <h2 className="text-xl font-semibold">{cls.title}</h2>
-              <p>
+              <h2 className="text-xl font-semibold text-primary">
+                {cls.title}
+              </h2>
+              <p className="text-text/80">
                 <strong>Teacher:</strong> {cls.teacherName} ({cls.teacherEmail})
               </p>
-              <p>
+              <p className="text-text/80">
                 <strong>Price:</strong> ${cls.price}
               </p>
-              <p className="mt-2">{cls.description}</p>
+              <p className="mt-2 text-text/70">{cls.description}</p>
               {cls.image && (
                 <img
                   src={cls.image}
                   alt={cls.title}
-                  className="mt-4 w-full h-40 object-cover rounded"
+                  className="mt-4 w-full h-40 object-cover rounded-2xl shadow"
                 />
               )}
               <p className="mt-2 font-semibold">
@@ -125,10 +125,10 @@ const MyClass = () => {
                 <span
                   className={`ml-1 ${
                     cls.status === 'approved'
-                      ? 'text-green-600'
+                      ? 'text-green-500'
                       : cls.status === 'pending'
-                      ? 'text-yellow-600'
-                      : 'text-red-600'
+                      ? 'text-accent'
+                      : 'text-red-500'
                   }`}
                 >
                   {cls.status}
@@ -139,7 +139,7 @@ const MyClass = () => {
             <div className="mt-4 flex gap-2 justify-end">
               <button
                 onClick={() => openUpdateModal(cls)}
-                className="btn btn-sm btn-warning"
+                className="btn btn-sm btn-accent text-white"
               >
                 Update
               </button>
@@ -156,7 +156,7 @@ const MyClass = () => {
                 className="btn btn-sm btn-primary"
                 disabled={cls.status !== 'approved'}
                 title={
-                  cls.status !== 'accepted'
+                  cls.status !== 'approved'
                     ? 'Wait until admin approves this class'
                     : 'See class details'
                 }
@@ -171,14 +171,16 @@ const MyClass = () => {
       {/* Update Modal */}
       {showUpdateModal && selectedClass && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg p-6 w-11/12 max-w-lg">
-            <h3 className="text-xl font-bold mb-4">Update Class</h3>
+          <div className="bg-background dark:bg-gray-900 rounded-2xl p-6 w-11/12 max-w-lg shadow-lg">
+            <h3 className="text-xl font-bold text-primary mb-4">
+              Update Class
+            </h3>
             <form onSubmit={handleUpdateSubmit} className="space-y-4">
               <div>
-                <label className="block font-medium">Title</label>
+                <label className="block font-medium text-text/80">Title</label>
                 <input
                   type="text"
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full border-primary focus:border-accent focus:ring-accent"
                   value={selectedClass.title}
                   onChange={e =>
                     setSelectedClass(prev => ({
@@ -190,11 +192,11 @@ const MyClass = () => {
                 />
               </div>
               <div>
-                <label className="block font-medium">Price</label>
+                <label className="block font-medium text-text/80">Price</label>
                 <input
                   type="number"
                   step="0.01"
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full border-primary focus:border-accent focus:ring-accent"
                   value={selectedClass.price}
                   onChange={e =>
                     setSelectedClass(prev => ({
@@ -206,9 +208,11 @@ const MyClass = () => {
                 />
               </div>
               <div>
-                <label className="block font-medium">Description</label>
+                <label className="block font-medium text-text/80">
+                  Description
+                </label>
                 <textarea
-                  className="textarea textarea-bordered w-full"
+                  className="textarea textarea-bordered w-full border-primary focus:border-accent focus:ring-accent"
                   value={selectedClass.description}
                   onChange={e =>
                     setSelectedClass(prev => ({
@@ -220,10 +224,12 @@ const MyClass = () => {
                 />
               </div>
               <div>
-                <label className="block font-medium">Image URL</label>
+                <label className="block font-medium text-text/80">
+                  Image URL
+                </label>
                 <input
                   type="text"
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full border-primary focus:border-accent focus:ring-accent"
                   value={selectedClass.image || ''}
                   onChange={e =>
                     setSelectedClass(prev => ({
@@ -237,12 +243,12 @@ const MyClass = () => {
               <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
-                  className="btn btn-outline"
+                  className="btn btn-outline border-accent text-accent hover:bg-accent/10"
                   onClick={() => setShowUpdateModal(false)}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-primary text-white">
                   Save
                 </button>
               </div>

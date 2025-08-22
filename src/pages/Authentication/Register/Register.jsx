@@ -30,8 +30,7 @@ const Register = () => {
         email,
         photoURL,
       };
-      // save user data
-      saveUserInDb(userData);
+      await saveUserInDb(userData);
       Swal.fire('Success!', 'Account created successfully!', 'success');
       navigate('/login');
     } catch (error) {
@@ -45,10 +44,10 @@ const Register = () => {
       const userData = {
         name: result?.user?.displayName,
         email: result?.user?.email,
-        image: result?.user?.photoURL,
+        photoURL: result?.user?.photoURL,
       };
 
-      saveUserInDb(userData);
+      await saveUserInDb(userData);
       Swal.fire('Success!', 'Signed in with Google', 'success');
       navigate('/');
     } catch (error) {
@@ -57,16 +56,16 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gray-100 p-4">
+    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-background p-6">
       {/* Left Side: Register Form */}
-      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center text-blue-600">
+      <div className="bg-background border border-primary/20 p-8 rounded-2xl shadow-lg max-w-md w-full">
+        <h2 className="text-3xl font-bold mb-6 text-center text-primary">
           Create an Account
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <input
             {...register('name', { required: true })}
-            className="input input-bordered w-full"
+            className="input input-bordered w-full focus:border-primary"
             placeholder="Name"
           />
           {errors.name && (
@@ -75,13 +74,13 @@ const Register = () => {
 
           <input
             {...register('photoURL')}
-            className="input input-bordered w-full"
+            className="input input-bordered w-full focus:border-primary"
             placeholder="Photo URL (optional)"
           />
 
           <input
             {...register('email', { required: true })}
-            className="input input-bordered w-full"
+            className="input input-bordered w-full focus:border-primary"
             placeholder="Email"
           />
           {errors.email && (
@@ -91,7 +90,7 @@ const Register = () => {
           <input
             type="password"
             {...register('password', { required: true, minLength: 6 })}
-            className="input input-bordered w-full"
+            className="input input-bordered w-full focus:border-primary"
             placeholder="Password"
           />
           {errors.password && (
@@ -106,21 +105,22 @@ const Register = () => {
           <button
             type="button"
             onClick={handleGoogle}
-            className="btn btn-outline w-full"
+            className="btn btn-outline border-primary text-primary hover:bg-primary hover:text-background w-full"
           >
             Continue with Google
           </button>
         </form>
-        <p className="mt-4 text-sm">
+        <p className="mt-4 text-sm text-text/80 text-center">
           Already have an account?{' '}
-          <Link className="text-blue-600" to="/login">
+          <Link className="text-accent font-semibold" to="/login">
             Login here
           </Link>
         </p>
       </div>
+
       {/* Right Side: Icon */}
-      <div className="text-blue-500 text-[8rem] hidden md:flex items-center justify-center ml-10">
-        <FaUserPlus className="text-[120px] text-blue-500" />
+      <div className="flex justify-center items-center mt-10 md:mt-0 md:ml-10">
+        <FaUserPlus className="text-[120px] text-primary" />
       </div>
     </div>
   );

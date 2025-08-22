@@ -30,7 +30,7 @@ const instructors = [
 
 export default function BestInstructors() {
   return (
-    <section className="py-24 bg-background dark:bg-background transition-colors duration-500">
+    <section className="py-24 bg-background transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-4">
         {/* Section Header */}
         <motion.div
@@ -43,7 +43,7 @@ export default function BestInstructors() {
           <h2 className="text-4xl md:text-5xl font-extrabold text-primary mb-4">
             Meet Our Expert Instructors
           </h2>
-          <p className="text-gray-600 dark:text-text text-lg md:text-xl max-w-2xl mx-auto">
+          <p className="text-text/70 text-lg md:text-xl max-w-2xl mx-auto">
             Learn from top educators with years of experience. Each instructor
             is verified, passionate, and dedicated to helping you succeed.
           </p>
@@ -54,7 +54,7 @@ export default function BestInstructors() {
           {instructors.map((inst, idx) => (
             <motion.div
               key={idx}
-              className="relative rounded-3xl p-8 bg-background dark:bg-background shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-visible border border-primary/20 dark:border-accent/30"
+              className="relative rounded-3xl p-8 bg-background shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-visible border border-primary/20 dark:border-accent/30 group"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -68,15 +68,15 @@ export default function BestInstructors() {
                 <img
                   src={inst.image}
                   alt={inst.name}
-                  className="w-32 h-32 object-contain rounded-full border-4 border-primary dark:border-accent shadow-md"
+                  className="w-32 h-32 object-cover rounded-full border-4 border-primary dark:border-accent shadow-md"
                 />
               </div>
 
               {/* Instructor Info */}
-              <h3 className="text-xl md:text-2xl font-bold text-text dark:text-text text-center">
+              <h3 className="text-xl md:text-2xl font-bold text-text text-center">
                 {inst.name}
               </h3>
-              <p className="text-sm md:text-base text-secondary dark:text-secondary text-center mt-1">
+              <p className="text-sm md:text-base text-secondary text-center mt-1">
                 {inst.subject}
               </p>
 
@@ -86,12 +86,12 @@ export default function BestInstructors() {
               </p>
 
               {/* Description */}
-              <p className="text-gray-600 dark:text-white text-sm md:text-base text-center mt-2 px-4">
+              <p className="text-text/70 dark:text-text/90 text-sm md:text-base text-center mt-2 px-4">
                 {inst.description}
               </p>
 
               {/* Subtle Shadow Glow */}
-              <div className="absolute inset-0 rounded-3xl shadow-[0_8px_20px_rgba(161,56,219,0.15)] group-hover:shadow-[0_12px_30px_rgba(224,87,198,0.2)] transition-shadow duration-500"></div>
+              <div className="absolute inset-0 rounded-3xl group-hover:shadow-[0_12px_30px_rgba(161,56,219,0.25)] transition-shadow duration-500"></div>
             </motion.div>
           ))}
         </div>

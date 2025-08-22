@@ -46,17 +46,15 @@ const AllClass = () => {
     }
   };
 
-  const visibleClasses = classes.filter(cls => cls.status !== 'rejected');
-
   return (
-    <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-[80vh]">
-      <h2 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">
+    <div className="p-6 bg-background dark:bg-gray-900 min-h-[80vh]">
+      <h2 className="text-3xl font-bold text-center mb-6 text-primary dark:text-white">
         📋 Manage Submitted Classes
       </h2>
 
-      <div className="overflow-x-auto shadow-lg rounded-lg bg-white dark:bg-gray-800">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm text-gray-700 dark:text-gray-200">
-          <thead className="bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300 uppercase">
+      <div className="overflow-x-auto shadow-lg rounded-lg bg-card dark:bg-gray-800">
+        <table className="min-w-full divide-y divide-divider dark:divide-gray-700 text-sm text-text dark:text-text/80">
+          <thead className="bg-card-header dark:bg-gray-700 text-xs text-text/60 dark:text-text/40 uppercase">
             <tr>
               <th className="px-6 py-4 text-left">Image</th>
               <th className="px-6 py-4 text-left">Title</th>
@@ -67,11 +65,11 @@ const AllClass = () => {
               <th className="px-6 py-4 text-center">Progress</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+          <tbody className="divide-y divide-divider dark:divide-gray-700">
             {classes.map(cls => (
               <tr
                 key={cls._id}
-                className="hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                className="hover:bg-background/50 dark:hover:bg-gray-700 transition"
               >
                 <td className="px-6 py-4">
                   <img
@@ -93,7 +91,7 @@ const AllClass = () => {
                       cls.status === 'approved'
                         ? 'bg-green-100 text-green-700'
                         : cls.status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-700'
+                        ? 'bg-accent/20 text-accent'
                         : 'bg-red-100 text-red-700'
                     }`}
                   >
@@ -105,14 +103,14 @@ const AllClass = () => {
                     <button
                       onClick={() => handleApprove(cls._id)}
                       disabled={cls.status !== 'pending'}
-                      className="btn btn-sm bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 w-24"
+                      className="btn btn-sm bg-primary hover:bg-primary/90 text-white disabled:opacity-50 w-24"
                     >
                       Approve
                     </button>
                     <button
                       onClick={() => handleReject(cls._id)}
                       disabled={cls.status !== 'pending'}
-                      className="btn btn-sm bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 w-24"
+                      className="btn btn-sm bg-accent hover:bg-accent/90 text-white disabled:opacity-50 w-24"
                     >
                       Reject
                     </button>
@@ -122,14 +120,14 @@ const AllClass = () => {
                   {cls.status === 'approved' ? (
                     <Link
                       to={`/dashboard/class-progress/${cls._id}`}
-                      className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white"
+                      className="btn btn-sm bg-secondary hover:bg-secondary/90 text-white"
                     >
                       View Progress
                     </Link>
                   ) : (
                     <button
                       className={`btn btn-sm text-white cursor-not-allowed ${
-                        cls.status === 'rejected' ? 'bg-red-400' : 'bg-gray-400'
+                        cls.status === 'rejected' ? 'bg-red-400' : 'bg-text/40'
                       }`}
                       disabled
                     >

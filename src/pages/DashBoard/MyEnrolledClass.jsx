@@ -18,7 +18,6 @@ const MyEnrolledClass = () => {
     enabled: !!user?.email,
     queryFn: async () => {
       const res = await axiosSecure.get(`/enrollments?email=${user.email}`);
-
       return res.data;
     },
   });
@@ -33,8 +32,10 @@ const MyEnrolledClass = () => {
 
   if (isError) {
     return (
-      <div className="text-center text-red-500 mt-10">
-        <p>Failed to load your enrolled classes. Please try again later.</p>
+      <div className="text-center text-red-600 mt-10">
+        <p className="font-medium">
+          Failed to load your enrolled classes. Please try again later.
+        </p>
         <p className="text-sm">{error?.message}</p>
       </div>
     );
@@ -42,12 +43,12 @@ const MyEnrolledClass = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+      <h2 className="text-3xl font-bold text-primary mb-6 text-center">
         📚 My Enrolled Classes
       </h2>
 
       {enrolled.length === 0 ? (
-        <div className="text-center text-gray-500 dark:text-gray-400 mt-10">
+        <div className="text-center text-text/70 dark:text-text/50 mt-10">
           <p className="text-lg">You haven't enrolled in any classes yet.</p>
           <Link to="/" className="btn btn-outline mt-4">
             Browse Classes
@@ -58,7 +59,7 @@ const MyEnrolledClass = () => {
           {enrolled.map(cls => (
             <div
               key={cls._id}
-              className="card bg-base-100 dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow"
+              className="card bg-background dark:bg-gray-900 shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-shadow"
             >
               <figure className="h-44 overflow-hidden">
                 <img
@@ -68,22 +69,22 @@ const MyEnrolledClass = () => {
                 />
               </figure>
               <div className="card-body">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+                <h2 className="text-xl font-bold text-primary">
                   {cls.classTitle}
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+                <p className="text-sm text-text dark:text-text/70">
                   👨‍🏫 Instructor: {cls.teacherName}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+                <p className="text-sm text-text dark:text-text/70">
                   💵 Price: ${cls.price}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-text/60 dark:text-text/50">
                   📅 Enrolled on:{' '}
                   {new Date(cls.enrolledAt).toLocaleDateString()}
                 </p>
                 <Link
                   to={`/dashboard/my-enroll-class/${cls.classId}`}
-                  className="btn btn-primary mt-4"
+                  className="btn btn-primary mt-4 w-full"
                 >
                   Continue Learning
                 </Link>

@@ -13,14 +13,14 @@ const Sidebar = () => {
      ${
        isActive
          ? 'bg-primary text-white shadow-md'
-         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+         : 'text-text dark:text-text/80 hover:bg-primary/10 dark:hover:bg-primary/20'
      }`;
 
   return (
     <ul className="menu p-4 space-y-2">
       {role === 'student' && (
         <>
-          <li className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mt-4">
+          <li className="text-xs font-bold uppercase text-accent/70 mt-4">
             Student Panel
           </li>
           <li>
@@ -36,7 +36,7 @@ const Sidebar = () => {
 
       {role === 'teacher' && (
         <>
-          <li className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mt-4">
+          <li className="text-xs font-bold uppercase text-accent/70 mt-4">
             Teacher Panel
           </li>
           <li>
@@ -54,7 +54,7 @@ const Sidebar = () => {
 
       {role === 'admin' && (
         <>
-          <li className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mt-4">
+          <li className="text-xs font-bold uppercase text-accent/70 mt-4">
             Admin Panel
           </li>
           <li>

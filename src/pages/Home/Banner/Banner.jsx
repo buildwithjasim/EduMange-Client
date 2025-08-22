@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 export default function HeroSection() {
   return (
-    <section className="relative bg-background dark:bg-background overflow-hidden">
+    <section className="relative bg-background overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 py-24 lg:py-32 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* Left Content */}
         <div className="space-y-6">
@@ -20,7 +20,7 @@ export default function HeroSection() {
           </motion.h1>
 
           <motion.p
-            className="text-gray-600 dark:text-gray-300 text-lg md:text-xl max-w-xl"
+            className="text-text/80 text-lg md:text-xl max-w-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3 }}
@@ -37,18 +37,18 @@ export default function HeroSection() {
             transition={{ duration: 1, delay: 0.6 }}
           >
             <Link to="/allClasses">
-              <button className="btn btn-primary px-6 py-3 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+              <button className="btn btn-primary px-6 py-3 font-semibold shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
                 Explore Courses
               </button>
             </Link>
             <Link to="/TeachOnEduManage">
-              <button className="btn btn-outline px-6 py-3 font-semibold text-primary hover:bg-primary hover:text-white transition-all duration-300">
+              <button className="btn btn-outline px-6 py-3 font-semibold text-primary hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
                 Teach With Us
               </button>
             </Link>
           </motion.div>
 
-          {/* Optional small stats/trust indicators */}
+          {/* Small stats/trust indicators */}
           <motion.div
             className="flex flex-wrap gap-6 mt-10"
             initial={{ opacity: 0 }}
@@ -59,25 +59,19 @@ export default function HeroSection() {
               <span className="text-2xl md:text-3xl font-bold text-primary">
                 5000+
               </span>
-              <span className="text-gray-500 dark:text-gray-400 text-sm">
-                Students
-              </span>
+              <span className="text-text/60 text-sm">Students</span>
             </div>
             <div className="flex flex-col items-center">
               <span className="text-2xl md:text-3xl font-bold text-accent">
                 200+
               </span>
-              <span className="text-gray-500 dark:text-gray-400 text-sm">
-                Courses
-              </span>
+              <span className="text-text/60 text-sm">Courses</span>
             </div>
             <div className="flex flex-col items-center">
               <span className="text-2xl md:text-3xl font-bold text-secondary">
                 50+
               </span>
-              <span className="text-gray-500 dark:text-gray-400 text-sm">
-                Expert Instructors
-              </span>
+              <span className="text-text/60 text-sm">Expert Instructors</span>
             </div>
           </motion.div>
         </div>
@@ -97,7 +91,7 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Optional background accent shapes */}
+      {/* Background accent shapes */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-primary/20 rounded-full -z-10 blur-3xl"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/20 rounded-full -z-10 blur-3xl"></div>
     </section>
